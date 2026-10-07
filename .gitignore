@@ -1,0 +1,5 @@
+node_modules/
+out/
+# Raw footage and voiceover live in Google Drive, not git.
+public/media/*
+!public/media/.gitkeep
