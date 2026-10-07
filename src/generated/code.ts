@@ -132,7 +132,7 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/scenes/Resume.tsx",
-    "lines": 748
+    "lines": 749
   },
   {
     "path": "src/scenes/Ship.tsx",
@@ -327,8 +327,11 @@ export const TREE: { path: string; lines: number }[] = [
     "lines": 59
   }
 ];
-export const TOTAL_LINES = 8208;
+export const TOTAL_LINES = 8209;
 export const GIT_LOG: string[] = [
+  "4eafca0 WIP: scene rebuilds in progress (hook, résumé/prompt, proof, skills/bet)",
+  "1412fcb Use the 4K mobile capture and commit QA'd capture clips",
+  "7a32d48 Rebuild Twist and Ship scenes",
   "8dfa804 Add motion toolkit: HUD, glitch cuts, scramble text, callouts, floating code",
   "6a87449 Build the proof-of-work edit around the real site footage",
   "f8c70f4 Add directed capture clips and full-page stills script",
