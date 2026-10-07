@@ -329,6 +329,7 @@ export const TREE: { path: string; lines: number }[] = [
 ];
 export const TOTAL_LINES = 8229;
 export const GIT_LOG: string[] = [
+  "9be6614 Rebuild Proof, Skills and Bet scenes",
   "6c890db WIP: proof and skills/bet scene rebuilds in progress",
   "f56acd8 Match-cut the Hook's push-in into the Résumé scene",
   "4eafca0 WIP: scene rebuilds in progress (hook, résumé/prompt, proof, skills/bet)",
