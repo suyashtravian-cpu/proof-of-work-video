@@ -9,9 +9,9 @@ const JOKE = 1.2;
 const after = (l: Line): Line => (l.t >= 14.95 ? { ...l, t: l.t + JOKE, end: l.end + JOKE } : l);
 
 const BASE: Line[] = [
-  { t: 0.2, end: 1.9, text: "I stopped sending résumés." },
-  { t: 2.3, end: 4.2, text: "Every application asks for the same thing." },
-  { t: 4.4, end: 5.6, text: "Upload your résumé." },
+  { t: 0.2, end: 1.9, text: "I stopped sending résumés.", kinetic: true },
+  { t: 2.3, end: 4.2, text: "Every application asks for the same thing.", kinetic: true },
+  { t: 4.4, end: 5.6, text: "Upload your résumé.", kinetic: true },
   { t: 6.0, end: 8.4, text: "But a résumé only tells you where I've worked." },
   { t: 8.8, end: 9.9, text: "Not how I think.", kinetic: true },
   { t: 10.1, end: 11.2, text: "Not what I can build.", kinetic: true },
