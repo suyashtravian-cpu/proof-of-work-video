@@ -1,6 +1,8 @@
 import { AbsoluteFill, Audio, Sequence, staticFile } from "remotion";
 import { Captions } from "./components/Captions";
 import { Grain } from "./components/Grain";
+import { GlitchCut } from "./fx/GlitchCut";
+import { Hud } from "./fx/Hud";
 import { loadFonts } from "./fonts";
 import { Bet } from "./scenes/Bet";
 import { Hook } from "./scenes/Hook";
@@ -11,7 +13,8 @@ import { Ship } from "./scenes/Ship";
 import { Skills } from "./scenes/Skills";
 import { Twist } from "./scenes/Twist";
 import { theme } from "./theme";
-import { MUSIC, MUSIC_VOLUME, SCENES, SFX, VOICEOVER } from "./timeline";
+import { SFX } from "./sfx";
+import { MUSIC, MUSIC_VOLUME, SCENES, VOICEOVER } from "./timeline";
 import { sec } from "./timing";
 
 loadFonts();
@@ -37,7 +40,9 @@ export const ProofOfWork: React.FC = () => (
         </Sequence>
       );
     })}
+    <GlitchCut />
     <Captions />
+    <Hud />
     <Grain />
     {SFX.map(([file, at, volume], i) => (
       <Sequence key={i} from={sec(at)} name={`sfx ${file}`} layout="none">
