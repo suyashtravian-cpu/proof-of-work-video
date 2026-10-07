@@ -16,5 +16,8 @@ export const SCENES = [
 // Voiceover file in public/, or null until the ElevenLabs take arrives.
 export const VOICEOVER: string | null = null;
 // Music is supplied by the user (generated in ElevenLabs or similar); the edit never generates it.
-export const MUSIC: string | null = null;
-export const MUSIC_VOLUME = 0.22;
+// Built by scripts/build-music.py (not committed). Odd Beats 01 by Lily J, Mixkit Stock Music Free License:
+//   python3 scripts/build-music.py <722.mp3 from https://assets.mixkit.co/music/722/722.mp3> 0.05 public/music/odd-beats-01.wav
+// Alternate: Electro Dreams by Arulo (https://assets.mixkit.co/music/190/190.mp3, offset -0.2).
+export const MUSIC: string | null = "music/odd-beats-01.wav";
+export const MUSIC_VOLUME = 0.72;

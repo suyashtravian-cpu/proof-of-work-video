@@ -6,3 +6,7 @@ public/media/*
 
 # Footage is rendered by capture/, not committed.
 public/captures/
+
+# Licensed music beds are built locally by scripts/build-music.py, never committed
+# (Mixkit Stock Music Free License: free in videos, no redistribution).
+public/music/
