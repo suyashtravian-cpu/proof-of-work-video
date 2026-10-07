@@ -3,13 +3,13 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "dev": "remotion studio",
-    "render": "remotion render ProofOfWorkVertical out/proof-of-work-9x16.mp4",
-    "render:wide": "remotion render ProofOfWorkWide out/proof-of-work-16x9.mp4",
-    "still": "remotion still ProofOfWorkVertical out/frame.png --frame=60",
+    "dev": "node scripts/snapshot-code.mjs && remotion studio",
+    "render": "node scripts/snapshot-code.mjs && remotion render ProofOfWorkVertical out/proof-of-work.mp4",
+    "still": "remotion still ProofOfWorkVertical out/frame.png",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@fontsource/jetbrains-mono": "^5.3.0",
     "@remotion/cli": "4.0.534",
     "react": "19.1.0",
     "react-dom": "19.1.0",

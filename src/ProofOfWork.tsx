@@ -1,35 +1,50 @@
-import { AbsoluteFill, Series } from "remotion";
-import { beats } from "./timeline";
-import { theme } from "./theme";
+import { AbsoluteFill, Audio, Sequence, staticFile } from "remotion";
+import { Captions } from "./components/Captions";
+import { Grain } from "./components/Grain";
+import { loadFonts } from "./fonts";
+import { Bet } from "./scenes/Bet";
 import { Hook } from "./scenes/Hook";
-import { Resume } from "./scenes/Resume";
-import { Doesnt } from "./scenes/Doesnt";
-import { Built } from "./scenes/Built";
-import { Montage } from "./scenes/Montage";
+import { Prompt } from "./scenes/Prompt";
 import { Proof } from "./scenes/Proof";
-import { Outro } from "./scenes/Outro";
+import { Resume } from "./scenes/Resume";
+import { Ship } from "./scenes/Ship";
+import { Skills } from "./scenes/Skills";
+import { Twist } from "./scenes/Twist";
+import { theme } from "./theme";
+import { MUSIC, MUSIC_VOLUME, SCENES, SFX, VOICEOVER } from "./timeline";
+import { sec } from "./timing";
 
-const scenes: Record<(typeof beats)[number]["id"], React.FC> = {
-  hook: Hook,
-  resume: Resume,
-  doesnt: Doesnt,
-  built: Built,
-  montage: Montage,
-  proof: Proof,
-  outro: Outro,
+loadFonts();
+
+const COMPONENTS: Record<(typeof SCENES)[number]["name"], React.FC> = {
+  Hook,
+  Résumé: Resume,
+  Prompt,
+  Proof,
+  Skills,
+  Bet,
+  Twist,
+  Ship,
 };
 
 export const ProofOfWork: React.FC = () => (
-  <AbsoluteFill style={{ background: theme.bg, fontFamily: theme.font, color: theme.fg }}>
-    <Series>
-      {beats.map((b) => {
-        const Scene = scenes[b.id];
-        return (
-          <Series.Sequence key={b.id} durationInFrames={b.frames}>
-            <Scene />
-          </Series.Sequence>
-        );
-      })}
-    </Series>
+  <AbsoluteFill style={{ background: theme.bg }}>
+    {SCENES.map((s) => {
+      const Scene = COMPONENTS[s.name];
+      return (
+        <Sequence key={s.name} name={s.name} from={sec(s.from)} durationInFrames={sec(s.to) - sec(s.from)}>
+          <Scene />
+        </Sequence>
+      );
+    })}
+    <Captions />
+    <Grain />
+    {SFX.map(([file, at, volume], i) => (
+      <Sequence key={i} from={sec(at)} name={`sfx ${file}`} layout="none">
+        <Audio src={staticFile(`sfx/${file}.wav`)} volume={volume} />
+      </Sequence>
+    ))}
+    {VOICEOVER && <Audio src={staticFile(VOICEOVER)} />}
+    {MUSIC && <Audio src={staticFile(MUSIC)} volume={MUSIC_VOLUME} />}
   </AbsoluteFill>
 );

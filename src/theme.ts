@@ -1,10 +1,12 @@
+// Matches the site: near-black shell, warm paper, Hubot Sans + mono.
 export const theme = {
-  bg: "#0b0b0f",
-  fg: "#f4f1ea",
-  muted: "#8a8796",
-  accent: "#c6ff3d",
-  danger: "#ff4d4d",
-  paper: "#f7f5f0",
-  ink: "#1a1a1f",
-  font: "'Inter', 'Helvetica Neue', Arial, sans-serif",
+  bg: "#080808",
+  fg: "#f2f1ec",
+  dim: "#8c8b86",
+  line: "#ffffff22",
+  paper: "#f3f1ec",
+  ink: "#121212",
+  red: "#ff3b2f",
+  sans: "'Hubot Sans', Arial, sans-serif",
+  mono: "'JetBrains Mono', 'Courier New', monospace",
 };

@@ -3,3 +3,6 @@ out/
 # Raw footage and voiceover live in Google Drive, not git.
 public/media/*
 !public/media/.gitkeep
+
+# Footage is rendered by capture/, not committed.
+public/captures/
