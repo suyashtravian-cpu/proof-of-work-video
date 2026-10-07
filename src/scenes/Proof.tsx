@@ -73,7 +73,7 @@ const TAGS: Tag[] = [
   { at: 4.46, until: 5.03, r: [156, 196, 396, 356], label: "02 · FIX MY CURLS" },
   { at: 4.56, until: 5.03, r: [156, 420, 396, 580], label: "03 · THE PANT PROJECT" },
   { at: 4.66, until: 5.03, r: [156, 644, 396, 800], label: "04 · DRINKPRIME" },
-  { at: 5.36, until: 5.74, r: [72, 536, 1368, 850], label: "EXPERIMENT ARCHIVE · 10 ORIGINAL BUILDS", color: CYAN },
+  { at: 5.36, until: 5.74, r: [72, 536, 1368, 850], label: "EXPERIMENT ARCHIVE · 10 ORIGINAL EXPERIMENTS", color: CYAN },
   { at: 5.74, until: 7.02, r: [72, 536, 486, 850], label: "ATLAS AI" },
   { at: 5.86, until: 7.02, r: [512, 536, 926, 850], label: "LEXIS" },
   { at: 5.98, until: 7.02, r: [952, 536, 1368, 850], label: "OPEN INTEREST" },
@@ -149,7 +149,8 @@ const TopStatus: React.FC<{ t: number }> = ({ t }) => {
   const done = t >= REVEAL;
   return (
     <div style={{ position: "absolute", top: 236, left: 0, right: 0, textAlign: "center", opacity: k * (1 - out), transform: `translateY(${-out * 40}px)` }}>
-      <div style={{ fontFamily: theme.mono, fontSize: 24, letterSpacing: "0.2em", color: done ? theme.fg : theme.dim, display: "flex", justifyContent: "center", alignItems: "center", gap: 12 }}>
+      <div style={{ position: "absolute", left: 90, right: 90, top: -50, height: done ? 290 : 190, background: "radial-gradient(closest-side, #080808f0, #08080800)" }} />
+      <div style={{ fontFamily: theme.mono, fontSize: 24, letterSpacing: "0.2em", color: theme.fg, display: "flex", justifyContent: "center", alignItems: "center", gap: 12 }}>
         {done && <span style={{ width: 14, height: 14, borderRadius: 7, background: theme.red }} />}
         <Scramble key={done ? "d" : "b"} text={done ? "DEPLOYED · LIVE ON THE WEB" : "COMPILING  RESUME.PDF → WEBSITE"} at={done ? REVEAL : 0.06} dur={0.35} />
       </div>

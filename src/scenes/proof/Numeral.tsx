@@ -18,6 +18,7 @@ export type Num = {
 };
 
 export const NUM_TOP = 150;
+const SOUP = "#%&$?/*<>@";
 
 /** Giant outlined numeral: slams in with chroma split, scrambles until the footage starts counting, then counts in sync and lands. */
 export const Numeral: React.FC<{ n: Num | undefined; active?: number }> = ({ n, active = 0 }) => {
@@ -32,7 +33,8 @@ export const Numeral: React.FC<{ n: Num | undefined; active?: number }> = ({ n, 
   let scrambling = false;
   if (counting && t < n.countFrom!) {
     scrambling = true;
-    text = [...final].map((ch, i) => (/\d/.test(ch) ? String(Math.floor(random(`nd${n.value}${i}${Math.floor(f / 2)}`) * 10)) : ch)).join("");
+    // glyph soup, not plausible digits: a paused frame never reads as a real figure
+    text = [...final].map((ch, i) => (/\d/.test(ch) ? SOUP[Math.floor(random(`nd${n.value}${i}${Math.floor(f / 2)}`) * SOUP.length)] : ch)).join("");
   } else if (counting) {
     text = Math.round(tween(t, n.countFrom!, n.countTo!, 0, n.value, easeOut)).toLocaleString("en-US");
   }

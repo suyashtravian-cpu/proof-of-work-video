@@ -10,7 +10,7 @@ export const FCH = (FW * 900) / 1440;
 export const FCY = 990;
 export const frameRect: Rect = { x: (1080 - FW) / 2, y: FCY - (FCH + BAR) / 2, w: FW, h: FCH + BAR };
 /** Triptych cards. */
-export const CW = 720;
+export const CW = 780;
 export const CCY = 1000;
 
 export const easeIn3 = Easing.in(Easing.cubic);

@@ -1,7 +1,6 @@
-import { OffthreadVideo, Sequence } from "remotion";
+import { OffthreadVideo, Sequence, staticFile } from "remotion";
 import { easeExpo, tween } from "../../components/anim";
 import { BrowserFrame } from "../../components/BrowserFrame";
-import { clip } from "../../footage";
 import { sec } from "../../timing";
 import { CCY, CW, easeIn3, footRect, whipEase } from "./geom";
 import { Track } from "./Track";
@@ -41,8 +40,8 @@ export const Carousel: React.FC<{ t: number }> = ({ t }) => {
   const zr = -2600 * (1 - inK) + tween(t, 2.98, TRI_OUT, 0, 1300, easeIn3);
   const cards = CARDS.map(([name, from, rect], i) => {
     const th = ((i - f) * 2 * Math.PI) / 3;
-    const x = R * Math.sin(th) * 1.05;
-    const z = R * (Math.cos(th) - 1) * 1.45 + zr;
+    const x = R * Math.sin(th) * 1.25;
+    const z = R * (Math.cos(th) - 1) * 1.1 + zr;
     const op = tween(t, TRI_IN + i * 0.05, TRI_IN + 0.12 + i * 0.05, 0, 1) * tween(t, TRI_OUT - 0.06, TRI_OUT, 1, 0);
     return { name, from, rect, i, th, x, z, op };
   });
@@ -57,18 +56,19 @@ export const Carousel: React.FC<{ t: number }> = ({ t }) => {
           key={c.name}
           width={CW}
           x={c.x}
-          y={CCY - 960 - 40 * (1 - Math.cos(c.th))}
+          y={CCY - 960 - 120 * (1 - Math.cos(c.th))}
           z={c.z}
           rotateY={(c.th * 180) / Math.PI * 0.32}
           rotateX={3}
           opacity={c.op}
-          dim={(1 - Math.cos(c.th)) * 0.3}
+          dim={(1 - Math.cos(c.th)) * 0.14}
           zIndex={Math.round(5000 + c.z)}
           live
           glow={0.4}
         >
           <Sequence from={sec(TRI_IN)} durationInFrames={sec(TRI_OUT) - sec(TRI_IN)} layout="none">
-            <OffthreadVideo src={clip("work")} trimBefore={sec(c.from)} muted style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            {/* cards show at ≤720 px: the 1440 px preview encode is plenty and keeps three streams cheap */}
+            <OffthreadVideo src={staticFile("captures/work.preview.mp4")} trimBefore={sec(c.from)} muted style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </Sequence>
         </BrowserFrame>
       ))}
