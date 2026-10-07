@@ -39,11 +39,12 @@ const poseAt = (t: number): Pose => {
   const flat = tween(t, 5.45, 5.8, 0, 1, easeInOut);
   return {
     cx: 540,
-    cy: mix(590, 385, g) + (1 - enter) * 900 + Math.sin(t * 1.1) * 6 * (1 - flat),
-    s: mix(0.62, 0.44, g) * (1 + t * 0.008),
-    rx: ((1 - enter) * 60 + mix(12, 6, g) + Math.sin(t * 0.8) * 2) * (1 - flat),
-    ry: (mix(-18, -10, g) + Math.sin(t * 0.6 + 1) * 4) * (1 - flat),
-    rz: ((1 - enter) * -10 + Math.sin(t * 0.5) * 1.2) * (1 - flat),
+    // Opens where the Hook's push-in lands (page big and flat, centred), then pulls back into 3D.
+    cy: mix(mix(960, 590, enter), 385, g) + Math.sin(t * 1.1) * 6 * (1 - flat),
+    s: mix(mix(1.3, 0.62, enter), 0.44, g) * (1 + t * 0.008),
+    rx: ((enter * mix(12, 6, g)) + Math.sin(t * 0.8) * 2 * enter) * (1 - flat),
+    ry: (enter * mix(-18, -10, g) + Math.sin(t * 0.6 + 1) * 4 * enter) * (1 - flat),
+    rz: (Math.sin(t * 0.5) * 1.2 * enter) * (1 - flat),
   };
 };
 
