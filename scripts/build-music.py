@@ -2,7 +2,9 @@
 """
 Cut a music track to the edit's timeline (seconds below are video time).
 
-  python3 scripts/build-music.py <track.mp3> <offset_seconds> <out.wav>
+  python3 scripts/build-music.py <track.mp3> <offset_seconds> <out.wav> [plain_length]
+
+With plain_length, only align, trim and fade (for edits without the v1 beats).
 
 offset = (track time of the track's drop) - 16.2, so the drop lands as the résumé
 shatters into the site. The music file itself is never committed: Mixkit tracks are
@@ -32,8 +34,18 @@ def at(t):
     return int(round(t * SR))
 
 
-def main(src, offset, out):
+def main(src, offset, out, plain_length=None):
     track = decode(src)
+    if plain_length:
+        n = at(plain_length)
+        a = at(offset)
+        bed = np.zeros((n, 2), np.float32)
+        seg = track[max(a, 0):max(a, 0) + n]
+        bed[max(-a, 0):max(-a, 0) + len(seg)] = seg[:n - max(-a, 0)]
+        t = np.arange(n) / SR
+        bed *= np.clip((plain_length - t) / 1.6, 0, 1)[:, None]   # fade out
+        bed *= np.clip(t / 0.08, 0, 1)[:, None]                   # click-free start
+        return finish(bed, out)
     n = at(LENGTH)
 
     def music(t0, t1):
@@ -88,6 +100,10 @@ def main(src, offset, out):
     e0, e1 = FADE_OUT
     bed *= np.clip((e1 - t) / (e1 - e0), 0, 1)[:, None]
 
+    finish(bed, out)
+
+
+def finish(bed, out):
     # Linear gain to -16 LUFS (loudnorm's dynamic mode would flatten the intro/drop contrast),
     # with a limiter only to catch peaks.
     pcm = bed.astype(np.float32).tobytes()
@@ -102,4 +118,4 @@ def main(src, offset, out):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], float(sys.argv[2]), sys.argv[3])
+    main(sys.argv[1], float(sys.argv[2]), sys.argv[3], float(sys.argv[4]) if len(sys.argv) > 4 else None)

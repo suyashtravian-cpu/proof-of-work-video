@@ -32,7 +32,7 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/Root.tsx",
-    "lines": 8
+    "lines": 29
   },
   {
     "path": "src/components/BrowserFrame.tsx",
@@ -40,7 +40,7 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/components/Captions.tsx",
-    "lines": 60
+    "lines": 65
   },
   {
     "path": "src/components/Code.tsx",
@@ -72,7 +72,7 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/fonts.ts",
-    "lines": 23
+    "lines": 26
   },
   {
     "path": "src/footage.ts",
@@ -283,6 +283,138 @@ export const TREE: { path: string; lines: number }[] = [
     "lines": 4
   },
   {
+    "path": "src/v2/IdeasVideo.tsx",
+    "lines": 53
+  },
+  {
+    "path": "src/v2/components/Basic.tsx",
+    "lines": 26
+  },
+  {
+    "path": "src/v2/components/Rec.tsx",
+    "lines": 43
+  },
+  {
+    "path": "src/v2/components/SiteFrame.tsx",
+    "lines": 49
+  },
+  {
+    "path": "src/v2/components/Sky.tsx",
+    "lines": 21
+  },
+  {
+    "path": "src/v2/scenes/After.tsx",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/scenes/Campaigns.tsx",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/scenes/Cta.tsx",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/scenes/End.tsx",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/scenes/Hook.tsx",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/scenes/Intro.tsx",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/scenes/Lab.tsx",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/scenes/Making.tsx",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/scenes/Manifesto.tsx",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/scenes/OneMind.tsx",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/scenes/Playground.tsx",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/scenes/Work.tsx",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/script.ts",
+    "lines": 29
+  },
+  {
+    "path": "src/v2/sfx/after.ts",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/sfx/campaigns.ts",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/sfx/cta.ts",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/sfx/end.ts",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/sfx/hook.ts",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/sfx/index.ts",
+    "lines": 33
+  },
+  {
+    "path": "src/v2/sfx/intro.ts",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/sfx/lab.ts",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/sfx/making.ts",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/sfx/manifesto.ts",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/sfx/onemind.ts",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/sfx/playground.ts",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/sfx/work.ts",
+    "lines": 5
+  },
+  {
+    "path": "src/v2/theme.ts",
+    "lines": 16
+  },
+  {
+    "path": "src/v2/timeline.ts",
+    "lines": 26
+  },
+  {
     "path": "capture/clips/creative.mjs",
     "lines": 71
   },
@@ -327,8 +459,10 @@ export const TREE: { path: string; lines: number }[] = [
     "lines": 59
   }
 ];
-export const TOTAL_LINES = 8251;
+export const TOTAL_LINES = 8696;
 export const GIT_LOG: string[] = [
+  "11ff6ac Update full-quality renders with the voiceover",
+  "84bae7f Add the voiceover: line-by-line placement, real caption timing, ducked mix",
   "11c061a Add full-quality renders with music (Git LFS)",
   "38123b2 Add music: free Mixkit track cut to the edit",
   "df7315f Refresh code snapshot for the final render",
@@ -338,7 +472,5 @@ export const GIT_LOG: string[] = [
   "4eafca0 WIP: scene rebuilds in progress (hook, résumé/prompt, proof, skills/bet)",
   "1412fcb Use the 4K mobile capture and commit QA'd capture clips",
   "7a32d48 Rebuild Twist and Ship scenes",
-  "8dfa804 Add motion toolkit: HUD, glitch cuts, scramble text, callouts, floating code",
-  "6a87449 Build the proof-of-work edit around the real site footage",
-  "f8c70f4 Add directed capture clips and full-page stills script"
+  "8dfa804 Add motion toolkit: HUD, glitch cuts, scramble text, callouts, floating code"
 ];

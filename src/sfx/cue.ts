@@ -1,4 +1,4 @@
-export type SfxFile = "whoosh" | "hit" | "click" | "riser" | "shatter";
+export type SfxFile = "whoosh" | "hit" | "click" | "riser" | "shatter" | "shimmer" | "swell";
 /** [file, seconds relative to the scene start, volume] */
 export type Cue = [file: SfxFile, at: number, volume: number];
 export const range = (from: number, to: number, step: number) =>
