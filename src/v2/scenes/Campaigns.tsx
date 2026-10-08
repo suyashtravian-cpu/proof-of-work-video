@@ -72,7 +72,7 @@ export const Campaigns: React.FC = () => {
   const rB = B.reddit + 0.34;
   const win = {
     y: track(t, [[0, 1150], [B.land, -80, ease.expo], [pA, -70], [pB, 10, ease.out], [rA, 0], [rB, 200, ease.expo], [7.3, 214]]) + Math.sin(t * 1.7) * 7,
-    h: track(t, [[0, 1000], [pA, 1000], [pB, 820, ease.out], [rA, 820], [rB, 580, ease.expo]]),
+    h: track(t, [[0, 880], [pA, 880], [pB, 820, ease.out], [rA, 820], [rB, 580, ease.expo]]),
     rx: track(t, [[0, 50], [B.land, 9, ease.expo], [pA, 4], [pB, 2, ease.out], [rA, 2], [rB, 30, ease.expo], [7.3, 26]]) + Math.sin(t * 0.9) * 0.8,
     ry: track(t, [[0, -16], [B.land, -9, ease.out], [pA, -5], [pB, 8, ease.out], [rA, 4], [rB, 0, ease.expo], [7.3, -3]]),
     rz: track(t, [[0, -4], [B.land, -1.5, ease.out], [pA, -0.8], [pB, 1.2, ease.out], [rA, 0.6], [rB, -1.5, ease.expo], [7.3, -0.6]]) + Math.sin(t * 1.2) * 0.35,
@@ -81,9 +81,9 @@ export const Campaigns: React.FC = () => {
     blur: track(t, [[B.hit, 0], [B.hit + 0.3, 1.6]]),
   };
   const cam = {
-    zoom: track(t, [[0, 1.16], [pA, 1.2], [pB, 1.8, ease.whip], [rA, 1.95], [rB, 1.5, ease.expo], [7.3, 1.56]]),
-    cx: track(t, [[0, 712], [pA, 704], [pB, 975, ease.whip], [rA, 958], [rB, 560, ease.expo], [7.3, 548]]),
-    cy: track(t, [[0, 560], [pA, 572], [pB, 405, ease.whip], [rA, 422], [rB, 330, ease.expo], [7.3, 324]]),
+    zoom: track(t, [[0, 1.25], [pA, 1.29], [pB, 1.8, ease.whip], [rA, 1.95], [rB, 1.5, ease.expo], [7.3, 1.56]]),
+    cx: track(t, [[0, 684], [pA, 676], [pB, 975, ease.whip], [rA, 958], [rB, 560, ease.expo], [7.3, 548]]),
+    cy: track(t, [[0, 642], [pA, 630], [pB, 405, ease.whip], [rA, 422], [rB, 392, ease.expo], [7.3, 386]]),
   };
   const whip = bell(t, pA, pB) + bell(t, rA, rB) * 0.8;
   const mblur: [number, number] = [whip * 16, whip * 9];
@@ -103,7 +103,7 @@ export const Campaigns: React.FC = () => {
   const hitK = springAt(t, B.hit, 8, 0.5, 210);
   const numScale = lerp(0.22, 1, rise) * (t >= B.hit ? 1 + 0.2 * (1 - hitK) : 1);
   const numY = lerp(1120, 500, rise);
-  const numSize = 290;
+  const numSize = 320;
   const glow = 1 + 1.6 * Math.max(0, 1 - (t - B.hit) / 0.5) * (t >= B.hit ? 1 : 0);
 
   const px = -win.ry * 8 + Math.sin(t * 0.4) * 24;
@@ -143,12 +143,12 @@ export const Campaigns: React.FC = () => {
               position: "absolute",
               left: 540,
               top: numY,
-              transform: `translate(-50%, -50%) rotateX(68deg) rotateZ(${t * 40}deg) scale(${lerp(0.4, 1, prog(t, B.hit - 0.05, B.hit + 0.5, ease.expo))})`,
-              width: 900,
-              height: 900,
+              transform: `translate(-50%, -50%) perspective(2000px) rotateX(76deg) rotateZ(${t * 40}deg) scale(${lerp(0.4, 1, prog(t, B.hit - 0.05, B.hit + 0.5, ease.expo))})`,
+              width: 1150,
+              height: 1150,
             }}
           >
-            <ChromeRing size={900} thick={9} rot={t * 90} opacity={0.55 * prog(t, B.hit - 0.05, B.hit + 0.3)} style={{ left: 0, top: 0 }} />
+            <ChromeRing size={1150} thick={8} rot={t * 90} opacity={0.55 * prog(t, B.hit - 0.05, B.hit + 0.3)} style={{ left: 0, top: 0 }} />
           </div>
         )}
 
@@ -276,7 +276,7 @@ export const Campaigns: React.FC = () => {
                 position: "absolute",
                 left: 540 - (NUMERAL_EM * numSize) / 2,
                 top: numY - numSize * 0.48,
-                transform: `scale(${numScale}) rotateX(${(1 - rise) * 30}deg)`,
+                transform: `perspective(1400px) rotateX(${(1 - rise) * 35}deg) scale(${numScale})`,
                 transformOrigin: "50% 50%",
                 opacity: clamp01(rise * 3),
               }}
@@ -289,10 +289,10 @@ export const Campaigns: React.FC = () => {
         <div style={{ position: "absolute", left: 0, right: 0, top: 682, display: "flex", justifyContent: "center" }}>
           <SpringLetters text="REDDIT CLICKS" t={t} at={B.hit} size={84} color={theme2.lilac} tracking="0.04em" stagger={0.022} font={theme2.sans} />
         </div>
-        <Tag x={540} y={846} t={t} at={B.from} anchor="c" variant="paper" size={50} style={{ letterSpacing: "0.02em" }}>
+        <Tag x={540} y={846} t={t} at={B.from} anchor="c" variant="paper" size={60} style={{ letterSpacing: "0.02em" }}>
           <span style={{ fontSize: "0.62em", letterSpacing: "0.14em", opacity: 0.7, marginRight: 14, verticalAlign: "0.18em" }}>FROM</span>$59.17
         </Tag>
-        <Tag x={540} y={292} t={t} at={B.tag} anchor="c" variant="glass" size={30} style={{ textTransform: "none", letterSpacing: "0.03em" }}>
+        <Tag x={540} y={292} t={t} at={B.tag} anchor="c" variant="glass" size={34} style={{ textTransform: "none", letterSpacing: "0.03em" }}>
           Reddit ads · iCreateEpic
         </Tag>
       </AbsoluteFill>

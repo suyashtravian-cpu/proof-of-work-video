@@ -328,7 +328,7 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/v2/scenes/Lab.tsx",
-    "lines": 5
+    "lines": 352
   },
   {
     "path": "src/v2/scenes/Making.tsx",
@@ -336,7 +336,7 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/v2/scenes/Manifesto.tsx",
-    "lines": 5
+    "lines": 346
   },
   {
     "path": "src/v2/scenes/OneMind.tsx",
@@ -372,7 +372,7 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/v2/scenes/hook-intro/HeroWindow.tsx",
-    "lines": 99
+    "lines": 93
   },
   {
     "path": "src/v2/scenes/hook-intro/NameCard.tsx",
@@ -388,7 +388,7 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/v2/scenes/hook-intro/Words.tsx",
-    "lines": 225
+    "lines": 231
   },
   {
     "path": "src/v2/scenes/hook-intro/World.tsx",
@@ -396,7 +396,15 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/v2/scenes/hook-intro/util.ts",
-    "lines": 82
+    "lines": 97
+  },
+  {
+    "path": "src/v2/scenes/manifesto-work/DropBurst.tsx",
+    "lines": 85
+  },
+  {
+    "path": "src/v2/scenes/manifesto-work/callouts.tsx",
+    "lines": 115
   },
   {
     "path": "src/v2/scenes/manifesto-work/kit.tsx",
@@ -420,7 +428,7 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/v2/sfx/campaigns.ts",
-    "lines": 5
+    "lines": 21
   },
   {
     "path": "src/v2/sfx/cta.ts",
@@ -444,7 +452,7 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/v2/sfx/lab.ts",
-    "lines": 5
+    "lines": 22
   },
   {
     "path": "src/v2/sfx/making.ts",
@@ -519,8 +527,9 @@ export const TREE: { path: string; lines: number }[] = [
     "lines": 59
   }
 ];
-export const TOTAL_LINES = 13447;
+export const TOTAL_LINES = 14383;
 export const GIT_LOG: string[] = [
+  "411e130 WIP: second video scene designs in progress",
   "859887a WIP: second video scene designs in progress",
   "6c8a5b9 WIP: second video scenes in progress; mixer takes a length and optional voice",
   "f59f2f0 Start the second video: Ideas don't sit still",
@@ -531,6 +540,5 @@ export const GIT_LOG: string[] = [
   "df7315f Refresh code snapshot for the final render",
   "9be6614 Rebuild Proof, Skills and Bet scenes",
   "6c890db WIP: proof and skills/bet scene rebuilds in progress",
-  "f56acd8 Match-cut the Hook's push-in into the Résumé scene",
-  "4eafca0 WIP: scene rebuilds in progress (hook, résumé/prompt, proof, skills/bet)"
+  "f56acd8 Match-cut the Hook's push-in into the Résumé scene"
 ];

@@ -50,9 +50,9 @@ const WORDS = [
 ];
 
 const KEYS: CamKey[] = [
-  { t: 0, cx: 930, cy: 470, s: 2.15, r: -8, fy: 1080 },
-  { t: 0.36, cx: 856, cy: 505, s: 1.12, r: 0, fy: 1080, ease: eOutExpo },
-  { t: 0.74, cx: 860, cy: 508, s: 1.19, r: 0.7, fy: 1080, ease: (x) => x },
+  { t: 0, cx: 940, cy: 480, s: 2.1, r: -8, fy: 940 },
+  { t: 0.36, cx: 880, cy: 505, s: 1.2, r: 0, fy: 950, ease: eOut },
+  { t: 0.74, cx: 882, cy: 508, s: 1.26, r: 0.7, fy: 950, ease: (x) => x },
   { t: 1.0, cx: 768, cy: 803, s: 1.9, r: -2, fy: 1010, ease: eWhip },
   { t: 1.38, cx: 776, cy: 798, s: 1.98, r: -2.6, fy: 1010, ease: eOut },
   { t: 1.66, cx: 1137, cy: 748, s: 1.9, r: 2, fy: 1010, ease: eWhip },
@@ -163,8 +163,8 @@ export const OneMind: React.FC = () => {
             style={{
               position: "absolute",
               inset: 0,
-              WebkitMaskImage: "linear-gradient(180deg, transparent 0px, transparent 92px, #000 200px, #000 850px, transparent 975px)",
-              maskImage: "linear-gradient(180deg, transparent 0px, transparent 92px, #000 200px, #000 850px, transparent 975px)",
+              WebkitMaskImage: "linear-gradient(180deg, transparent 0px, transparent 300px, #000 372px, #000 850px, transparent 975px)",
+              maskImage: "linear-gradient(180deg, transparent 0px, transparent 300px, #000 372px, #000 850px, transparent 975px)",
             }}
           >
             <RecSpans spans={[REC_SPAN]} durations={[LEN]} />
@@ -207,7 +207,7 @@ export const OneMind: React.FC = () => {
       <AbsoluteFill
         style={{
           opacity: prog(t, 3.8, 4.2),
-          background: "linear-gradient(0deg, rgba(9,13,37,.9) 0px, rgba(9,13,37,.6) 420px, rgba(9,13,37,0) 700px)",
+          background: "linear-gradient(0deg, rgba(9,13,37,.94) 0px, rgba(9,13,37,.82) 560px, rgba(9,13,37,0) 820px)",
         }}
       />
 
@@ -451,7 +451,7 @@ export const OneMind: React.FC = () => {
       <LightSweep t={t} at={4.05} dur={0.7} opacity={0.35} angle={-22} />
 
       {/* entry flash (the cut on the beat) and the dive into the orb */}
-      <AbsoluteFill style={{ background: theme2.lilacSoft, opacity: (1 - prog(t, 0, 0.22)) * 0.45, mixBlendMode: "screen" }} />
+      <AbsoluteFill style={{ background: theme2.lilacSoft, opacity: (1 - prog(t, 0, 0.2)) * 0.3, mixBlendMode: "screen" }} />
       {dive > 0 && (
         <AbsoluteFill
           style={{

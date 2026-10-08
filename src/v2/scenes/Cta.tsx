@@ -35,8 +35,8 @@ const BTN_C: [number, number] = [(BUTTON[0] + BUTTON[2]) / 2, (BUTTON[1] + BUTTO
 
 const KEYS: CamKey[] = [
   { t: 0, cx: 1560, cy: 410, s: 5.5, r: 30, fy: 780 },
-  { t: 0.64, cx: 1110, cy: 540, s: 0.68, r: -3, ry: -22, rx: 7, fy: 690, ease: eOutExpo },
-  { t: 2.14, cx: 1060, cy: 540, s: 0.76, r: -1, ry: -10, rx: 4, fy: 690, ease: eIO },
+  { t: 0.64, cx: 975, cy: 540, s: 0.68, r: -3, ry: -22, rx: 7, fy: 690, ease: eOutExpo },
+  { t: 2.14, cx: 1000, cy: 540, s: 0.76, r: -1, ry: -10, rx: 4, fy: 690, ease: eIO },
   { t: 2.44, cx: 705, cy: 600, s: 1.52, fy: 860, ease: eWhip },
   { t: 3.3, cx: 705, cy: 608, s: 1.57, fy: 860, ease: eOut },
   { t: 3.72, cx: 702, cy: 614, s: 1.6, fy: 860, ease: (x) => x },

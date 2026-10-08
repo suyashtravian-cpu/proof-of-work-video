@@ -2,7 +2,7 @@ import { OffthreadVideo, Sequence } from "remotion";
 import { sec } from "../../../timing";
 import { REC, REC_H, REC_W } from "../../components/Rec";
 import { theme2 } from "../../theme";
-import { CHROME, HERO_RATE, HERO_REC_AT, HERO_SHOW, PULL, WIN_H, WIN_LEFT, WIN_TOP, WIN_W, lerp, pullP, tw, winPose } from "./util";
+import { CHROME, HERO_RATE, HERO_REC_AT, HERO_SHOW, lerp, tw, winPose, winRect } from "./util";
 import { SkyPlate, Streaks, Sweep } from "./World";
 
 /**
@@ -13,16 +13,10 @@ import { SkyPlate, Streaks, Sweep } from "./World";
 export const HeroWindow: React.FC<{ T: number; offset: number; overlay?: React.ReactNode }> = ({ T, offset, overlay }) => {
   const pose = winPose(T);
   if (pose.op <= 0.002) return null;
-  const p = pullP(T);
-  const x = lerp(0, WIN_LEFT, p);
-  const y = lerp(0, WIN_TOP, p);
-  const w = lerp(1080, WIN_W, p);
-  const h = lerp(1920, WIN_H, p);
-  const chrome = CHROME * tw(T, 1.72, 2.05, 0, 1, PULL);
+  const { p, x, y, w, h, chrome, ch } = winRect(T);
   const innerOp = 1 - tw(T, 1.8, 2.08, 0, 1);
   const footOp = tw(T, 1.78, 2.06, 0, 1);
   const sW = lerp(1, 0.9, p);
-  const ch = h - chrome;
   const fromF = Math.max(0, sec(HERO_SHOW - offset));
   const trim = sec(HERO_REC_AT + Math.max(0, offset - HERO_SHOW) * HERO_RATE);
   return (

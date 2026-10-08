@@ -1,21 +1,25 @@
 import { interpolate } from "remotion";
 import { theme2 } from "../../theme";
 import { IriRing } from "./World";
-import { C, OUT_EXPO, PULL, WIN_LEFT, WIN_TOP, CHROME, clamp01, footToScreen, lerp, springT, tw } from "./util";
+import { C, OUT_EXPO, clamp01, footToScreen, lerp, pullP, springT, tw, winRect } from "./util";
 
 const SIZE = 300;
 const PERSP = 1200;
 const VP: [number, number] = [540, 900];
 
-// Footage px -> landed window px (identity pose), for the headline targets.
-const land = (fx: number, fy: number): [number, number] => [WIN_LEFT + fx * C, WIN_TOP + CHROME + fy * C];
+// Footage px -> screen px inside the collapsing window at time T, so the words land exactly on the real headline.
+const land = (T: number, fx: number, fy: number): [number, number] => {
+  const r = winRect(T);
+  return [r.fx + fx * r.sc, r.fy + fy * r.sc];
+};
 
 type Word = {
   text: string;
   color: string;
   at: number;
   rest: [number, number];
-  target: [number, number];
+  foot: [number, number];
+  off: number;
   ts: number;
   from: { x: number; y: number; rx: number; ry: number; rz: number };
   ph: number;
@@ -23,18 +27,20 @@ type Word = {
 
 // "Ideas / don't / sit still." laid out like the site headline, then landed on it.
 // Footage headline boxes (rec px): Ideas 111-561 x 244-376, don't 219-568 x 400-532, sit still. 108-437 x 558-671.
-const LINE3 = land(272.5, 614.5);
 const S3 = 0.25;
 const WORDS: Word[] = [
-  { text: "Ideas", color: theme2.paper, at: -0.22, rest: [480, 645], target: land(336, 310), ts: 0.363, from: { x: -240, y: -260, rx: 24, ry: 55, rz: -10 }, ph: 0 },
-  { text: "don’t", color: theme2.lilac, at: 0.4, rest: [625, 888], target: land(393.5, 466), ts: 0.33, from: { x: 560, y: 60, rx: 0, ry: -75, rz: 12 }, ph: 2.1 },
-  { text: "sit", color: theme2.paper, at: 0.68, rest: [275, 1131], target: [LINE3[0] - 258 * S3, LINE3[1]], ts: S3, from: { x: -460, y: 320, rx: -35, ry: 45, rz: -14 }, ph: 4.0 },
-  { text: "still.", color: theme2.paper, at: 0.84, rest: [695, 1131], target: [LINE3[0] + 162 * S3, LINE3[1]], ts: S3, from: { x: 420, y: 420, rx: -30, ry: -45, rz: 16 }, ph: 5.3 },
+  { text: "Ideas", color: theme2.paper, at: -0.22, rest: [480, 645], foot: [336, 310], off: 0, ts: 0.363, from: { x: -240, y: -260, rx: 24, ry: 55, rz: -10 }, ph: 0 },
+  { text: "don’t", color: theme2.lilac, at: 0.4, rest: [625, 888], foot: [393.5, 466], off: 0, ts: 0.33, from: { x: 560, y: 60, rx: 0, ry: -75, rz: 12 }, ph: 2.1 },
+  { text: "sit", color: theme2.paper, at: 0.68, rest: [275, 1131], foot: [272.5, 614.5], off: -258, ts: S3, from: { x: -460, y: 320, rx: -35, ry: 45, rz: -14 }, ph: 4.0 },
+  { text: "still.", color: theme2.paper, at: 0.84, rest: [695, 1131], foot: [272.5, 614.5], off: 162, ts: S3, from: { x: 420, y: 420, rx: -30, ry: -45, rz: 16 }, ph: 5.3 },
 ];
 
 const wordTransform = (w: Word, T: number) => {
   const k = springT(T, w.at, 11, 0.85, 105);
-  const q = tw(T, 1.45, 2.0, 0, 1, PULL);
+  const q = pullP(T);
+  const ts = (w.ts * winRect(T).sc) / C;
+  const [tx0, ty] = land(T, w.foot[0], w.foot[1]);
+  const tx = tx0 + w.off * ts;
   const live = clamp01((T - w.at - 0.45) / 0.5) * (1 - q);
   const dolly = 100 * tw(T, 0, 1.45, 0, 1); // the camera drifts in
   // Flight from the depth of the sky, overshooting toward the lens, then settling.
@@ -52,26 +58,26 @@ const wordTransform = (w: Word, T: number) => {
   rz += live * 2.4 * Math.sin(T * 1.3 + w.ph);
   if (w.text === "still." && T > 1.12) rz += (1 - q) * 11 * Math.sin((T - 1.12) * 24) * Math.exp(-(T - 1.12) * 5);
   // The pull-back: every word lands on its twin in the real headline.
-  x = lerp(x, w.target[0], q);
-  y = lerp(y, w.target[1], q);
+  x = lerp(x, tx, q);
+  y = lerp(y, ty, q);
   z = lerp(z, 0, q);
   rx = lerp(rx, 0, q);
   ry = lerp(ry, 0, q);
   rz = lerp(rz, 0, q);
-  const s = lerp(1, w.ts, q);
+  const s = lerp(1, ts, q);
   const blur = Math.max(0, 1 - k) * 14;
   const op = clamp01(k * 4) * (1 - tw(T, 1.96, 2.1, 0, 1));
   return { transform: `translate3d(${x}px, ${y}px, ${z}px) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg) scale(${s}) translate(-50%, -50%)`, blur, op };
 };
 
 const ringState = (T: number) => {
-  const q = tw(T, 1.45, 2.0, 0, 1, PULL);
+  const q = pullP(T);
   const e = springT(T, 0.12, 13, 1, 80);
-  const [tx, ty] = land(1620, 220); // the chrome ring in the site's top-right corner
+  const [tx, ty] = land(T, 1620, 220); // the chrome ring in the site's top-right corner
   return {
     cx: lerp(540 + Math.sin(T * 0.9) * 14, tx, q),
     cy: lerp(905 + Math.cos(T * 0.8) * 10, ty, q),
-    d: lerp(1000 * (0.35 + 0.65 * e), 105, q),
+    d: lerp(1000 * (0.35 + 0.65 * e), (105 * winRect(T).sc) / C, q),
     thick: lerp(34, 9, q),
     tilt: lerp(-12 + Math.sin(T * 0.8) * 6, -30, q),
     rx: lerp(72 + Math.sin(T * 1.2) * 4, 55, q),

@@ -34,6 +34,21 @@ export const WIN_TOP = WIN_CY - WIN_H / 2;
 
 /** Pull-back progress: the full-bleed sky collapses into the site window. */
 export const pullP = (T: number) => tw(T, 1.45, 2.05, 0, 1, PULL);
+/** Height of the window's chrome bar while it grows in. */
+export const chromeH = (T: number) => CHROME * tw(T, 1.72, 2.05, 0, 1, PULL);
+
+/** The window rect (before its landed pose) and where the footage sits inside it (object-fit: cover). */
+export const winRect = (T: number) => {
+  const p = pullP(T);
+  const x = lerp(0, WIN_LEFT, p);
+  const y = lerp(0, WIN_TOP, p);
+  const w = lerp(1080, WIN_W, p);
+  const h = lerp(1920, WIN_H, p);
+  const chrome = chromeH(T);
+  const ch = h - chrome;
+  const sc = Math.max(w / REC_W, ch / REC_H);
+  return { p, x, y, w, h, chrome, ch, sc, fx: x + (w - REC_W * sc) / 2, fy: y + chrome + (ch - REC_H * sc) / 2 };
+};
 
 export type Pose = { cx: number; cy: number; s: number; rx: number; ry: number; op: number; zoom: number };
 

@@ -70,9 +70,9 @@ export const WhatIf: React.FC<{ T: number }> = ({ T }) => {
   const ty = -1550 * whip;
   const transform = `translate(${CHIP_CX}px, ${cy + ty}px) perspective(2200px) rotateX(${rx}deg) rotateY(${ry}deg) scale(${s})`;
 
-  const footOp = clamp01((m - 0.3) / 0.4);
-  const chipOp = 1 - clamp01((m - 0.22) / 0.33);
-  const labelOp = 1 - clamp01(m * 1.8);
+  const footOp = clamp01((m - 0.5) / 0.3);
+  const chipOp = 1 - clamp01((m - 0.45) / 0.27);
+  const labelOp = 1 - clamp01(m * 2.6);
   const fromF = sec(MORPH - INTRO_AT);
   const ring = clamp01(a * 1.2) * (1 - clamp01(m * 2.2));
 
