@@ -10,3 +10,6 @@ public/captures/
 # Licensed music beds are built locally by scripts/build-music.py, never committed
 # (Mixkit Stock Music Free License: free in videos, no redistribution).
 public/music/
+
+# Voiceover audio is built locally by scripts/build-voiceover.py, never committed.
+public/vo/

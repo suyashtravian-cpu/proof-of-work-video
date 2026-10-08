@@ -5,10 +5,15 @@ import { theme } from "../theme";
 // Word-by-word captions: each word lands when it is spoken, the newest word pops.
 export const Captions: React.FC<{ y?: number }> = ({ y = 1460 }) => {
   const t = useCurrentFrame() / 30;
-  const line = LINES.find((l) => !l.kinetic && t >= l.t - 0.05 && t < l.end + 0.35);
+  // The most recent line that has started; it lingers briefly after the voice ends,
+  // but never past the start of the next line.
+  const current = [...LINES].reverse().find((l) => t >= l.t - 0.05);
+  const line = current && !current.kinetic && t < current.end + 0.35 ? current : undefined;
   if (!line) return null;
   const words = (line.caption ?? line.text).split(" ");
   const span = line.end - line.t;
+  // When the caption is the spoken text, each word appears on its real voiceover timestamp.
+  const spoken = !line.caption && line.words && line.words.length === words.length ? line.words : null;
   return (
     <AbsoluteFill style={{ alignItems: "center", pointerEvents: "none" }}>
       <div
@@ -27,11 +32,12 @@ export const Captions: React.FC<{ y?: number }> = ({ y = 1460 }) => {
         }}
       >
         {words.map((w, i) => {
-          const at = line.t + (span * i) / words.length;
+          const at = spoken ? spoken[i].s : line.t + (span * i) / words.length;
           const age = t - at;
           if (age < 0) return null;
           const pop = Math.min(1, age / 0.12);
-          const newest = i === words.length - 1 || t < line.t + (span * (i + 1)) / words.length;
+          const nextAt = spoken ? spoken[i + 1]?.s ?? Infinity : line.t + (span * (i + 1)) / words.length;
+          const newest = i === words.length - 1 || t < nextAt;
           return (
             <span
               key={i}

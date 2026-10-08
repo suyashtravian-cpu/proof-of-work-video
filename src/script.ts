@@ -2,7 +2,10 @@
 // ElevenLabs take arrives; then they are replaced by word timestamps.
 // `caption` overrides on-screen text; `kinetic` lines are typeset by the scene
 // itself, so the caption track skips them.
-export type Line = { t: number; end: number; text: string; caption?: string; kinetic?: boolean };
+import VO from "./generated/vo-timing.json";
+
+export type Word = { w: string; s: number; e: number };
+export type Line = { t: number; end: number; text: string; caption?: string; kinetic?: boolean; words?: Word[] };
 
 // Lines from 15.0s onward sit 1.2s later to make room for the "make no mistakes" beat.
 const JOKE = 1.2;
@@ -40,6 +43,12 @@ const BASE: Line[] = [
   { t: 43.7, end: 44.9, text: "I ship with it.", kinetic: true },
 ];
 
-export const LINES: Line[] = BASE.map((l) =>
+const SLOTTED: Line[] = BASE.map((l) =>
   l.text === "Make no mistakes." ? { ...l, t: 14.95, end: 15.85 } : after(l),
 );
+
+// Real voiceover timing (scripts/build-voiceover.py) replaces the estimates line by line.
+export const LINES: Line[] = SLOTTED.map((l) => {
+  const v = VO.find((x) => x.text === l.text);
+  return v ? { ...l, t: v.t, end: v.end, words: v.words } : l;
+});

@@ -2,11 +2,11 @@
 export const CODE_FILES: { name: string; text: string }[] = [
   {
     "name": "ProofOfWork.tsx",
-    "text": "import { AbsoluteFill, Audio, Sequence, staticFile } from \"remotion\";\nimport { Captions } from \"./components/Captions\";\nimport { Grain } from \"./components/Grain\";\nimport { GlitchCut } from \"./fx/GlitchCut\";\nimport { Hud } from \"./fx/Hud\";\nimport { loadFonts } from \"./fonts\";\nimport { Bet } from \"./scenes/Bet\";\nimport { Hook } from \"./scenes/Hook\";\nimport { Prompt } from \"./scenes/Prompt\";\nimport { Proof } from \"./scenes/Proof\";\nimport { Resume } from \"./scenes/Resume\";\nimport { Ship } from \"./scenes/Ship\";\nimport { Skills } from \"./scenes/Skills\";\nimport { Twist } from \"./scenes/Twist\";\nimport { theme } from \"./theme\";\nimport { SFX } from \"./sfx\";\nimport { MUSIC, MUSIC_VOLUME, SCENES, VOICEOVER } from \"./timeline\";\nimport { sec } from \"./timing\";\n\nloadFonts();\n\nconst COMPONENTS: Record<(typeof SCENES)[number][\"name\"], React.FC> = {\n  Hook,\n  Résumé: Resume,\n  Prompt,\n  Proof,\n  Skills,\n  Bet,\n  Twist,\n  Ship,\n};\n\nexport const ProofOfWork: React.FC = () => (\n  <AbsoluteFill style={{ background: theme.bg }}>\n    {SCENES.map((s) => {\n      const Scene = COMPONENTS[s.name];\n      return (\n        <Sequence key={s.name} name={s.name} from={sec(s.from)} durationInFrames={sec(s.to) - sec(s.from)}>\n          <Scene />\n        </Sequence>\n      );\n    })}\n    <GlitchCut />\n    <Captions />\n    <Hud />\n    <Grain />\n    {SFX.map(([file, at, volume], i) => (\n      <Sequence key={i} from={sec(at)} name={`sfx ${file}`} layout=\"none\">\n        <Audio src={staticFile(`sfx/${file}.wav`)} volume={volume} />\n      </Sequence>\n    ))}\n    {VOICEOVER && <Audio src={staticFile(VOICEOVER)} />}\n    {MUSIC && <Audio src={staticFile(MUSIC)} volume={MUSIC_VOLUME} />}\n  </AbsoluteFill>\n);\n"
+    "text": "import { AbsoluteFill, Audio, Sequence, staticFile } from \"remotion\";\nimport { Captions } from \"./components/Captions\";\nimport { Grain } from \"./components/Grain\";\nimport { GlitchCut } from \"./fx/GlitchCut\";\nimport { Hud } from \"./fx/Hud\";\nimport { loadFonts } from \"./fonts\";\nimport { Bet } from \"./scenes/Bet\";\nimport { Hook } from \"./scenes/Hook\";\nimport { Prompt } from \"./scenes/Prompt\";\nimport { Proof } from \"./scenes/Proof\";\nimport { Resume } from \"./scenes/Resume\";\nimport { Ship } from \"./scenes/Ship\";\nimport { Skills } from \"./scenes/Skills\";\nimport { Twist } from \"./scenes/Twist\";\nimport { theme } from \"./theme\";\nimport { SFX } from \"./sfx\";\nimport { MUSIC, MUSIC_VOLUME, SCENES, VOICEOVER } from \"./timeline\";\nimport { sec } from \"./timing\";\n\nloadFonts();\n\nconst COMPONENTS: Record<(typeof SCENES)[number][\"name\"], React.FC> = {\n  Hook,\n  Résumé: Resume,\n  Prompt,\n  Proof,\n  Skills,\n  Bet,\n  Twist,\n  Ship,\n};\n\n// \"sfx\" renders only the sound effects, so voice and music can be mixed in post\n// (scripts/mix-audio.py ducks the music under the voice).\nexport type ProofOfWorkProps = { audio?: \"full\" | \"sfx\" };\n\nexport const ProofOfWork: React.FC<ProofOfWorkProps> = ({ audio = \"full\" }) => (\n  <AbsoluteFill style={{ background: theme.bg }}>\n    {SCENES.map((s) => {\n      const Scene = COMPONENTS[s.name];\n      return (\n        <Sequence key={s.name} name={s.name} from={sec(s.from)} durationInFrames={sec(s.to) - sec(s.from)}>\n          <Scene />\n        </Sequence>\n      );\n    })}\n    <GlitchCut />\n    <Captions />\n    <Hud />\n    <Grain />\n    {SFX.map(([file, at, volume], i) => (\n      <Sequence key={i} from={sec(at)} name={`sfx ${file}`} layout=\"none\">\n        <Audio src={staticFile(`sfx/${file}.wav`)} volume={volume} />\n      </Sequence>\n    ))}\n    {audio === \"full\" && VOICEOVER && <Audio src={staticFile(VOICEOVER)} />}\n    {audio === \"full\" && MUSIC && <Audio src={staticFile(MUSIC)} volume={MUSIC_VOLUME} />}\n  </AbsoluteFill>\n);\n"
   },
   {
     "name": "timeline.ts",
-    "text": "// Master edit: scene placement in seconds.\nexport const JOKE = 1.2; // the \"make no mistakes\" beat pushes everything after 15s\nconst J = (t: number) => t + JOKE;\n\nexport const SCENES = [\n  { name: \"Hook\", from: 0, to: 6.0 },\n  { name: \"Résumé\", from: 6.0, to: 13.0 },\n  { name: \"Prompt\", from: 13.0, to: J(15.05) },\n  { name: \"Proof\", from: J(15.0), to: J(28.1) },\n  { name: \"Skills\", from: J(28.1), to: J(31.4) },\n  { name: \"Bet\", from: J(31.4), to: J(36.5) },\n  { name: \"Twist\", from: J(36.5), to: J(42.0) },\n  { name: \"Ship\", from: J(42.0), to: J(47.5) },\n] as const;\n\n// Voiceover file in public/, or null until the ElevenLabs take arrives.\nexport const VOICEOVER: string | null = null;\n// Music is supplied by the user (generated in ElevenLabs or similar); the edit never generates it.\nexport const MUSIC: string | null = null;\nexport const MUSIC_VOLUME = 0.22;\n"
+    "text": "// Master edit: scene placement in seconds.\nexport const JOKE = 1.2; // the \"make no mistakes\" beat pushes everything after 15s\nconst J = (t: number) => t + JOKE;\n\nexport const SCENES = [\n  { name: \"Hook\", from: 0, to: 6.0 },\n  { name: \"Résumé\", from: 6.0, to: 13.0 },\n  { name: \"Prompt\", from: 13.0, to: J(15.05) },\n  { name: \"Proof\", from: J(15.0), to: J(28.1) },\n  { name: \"Skills\", from: J(28.1), to: J(31.4) },\n  { name: \"Bet\", from: J(31.4), to: J(36.5) },\n  { name: \"Twist\", from: J(36.5), to: J(42.0) },\n  { name: \"Ship\", from: J(42.0), to: J(47.5) },\n] as const;\n\n// Built by scripts/build-voiceover.py from the ElevenLabs take (not committed).\nexport const VOICEOVER: string | null = \"vo/voiceover.wav\";\n// Music is supplied by the user (generated in ElevenLabs or similar); the edit never generates it.\n// Built by scripts/build-music.py (not committed). Odd Beats 01 by Lily J, Mixkit Stock Music Free License:\n//   python3 scripts/build-music.py <722.mp3 from https://assets.mixkit.co/music/722/722.mp3> 0.05 public/music/odd-beats-01.wav\n// Alternate: Electro Dreams by Arulo (https://assets.mixkit.co/music/190/190.mp3, offset -0.2).\nexport const MUSIC: string | null = \"music/odd-beats-01.wav\";\nexport const MUSIC_VOLUME = 0.72;\n"
   },
   {
     "name": "Twist.tsx",
@@ -28,7 +28,7 @@ export const CODE_FILES: { name: string; text: string }[] = [
 export const TREE: { path: string; lines: number }[] = [
   {
     "path": "src/ProofOfWork.tsx",
-    "lines": 56
+    "lines": 60
   },
   {
     "path": "src/Root.tsx",
@@ -40,7 +40,7 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/components/Captions.tsx",
-    "lines": 54
+    "lines": 60
   },
   {
     "path": "src/components/Code.tsx",
@@ -228,7 +228,7 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/script.ts",
-    "lines": 46
+    "lines": 55
   },
   {
     "path": "src/sfx/bet.ts",
@@ -276,7 +276,7 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/timeline.ts",
-    "lines": 21
+    "lines": 24
   },
   {
     "path": "src/timing.ts",
@@ -327,8 +327,11 @@ export const TREE: { path: string; lines: number }[] = [
     "lines": 59
   }
 ];
-export const TOTAL_LINES = 8229;
+export const TOTAL_LINES = 8251;
 export const GIT_LOG: string[] = [
+  "11c061a Add full-quality renders with music (Git LFS)",
+  "38123b2 Add music: free Mixkit track cut to the edit",
+  "df7315f Refresh code snapshot for the final render",
   "9be6614 Rebuild Proof, Skills and Bet scenes",
   "6c890db WIP: proof and skills/bet scene rebuilds in progress",
   "f56acd8 Match-cut the Hook's push-in into the Résumé scene",
@@ -337,7 +340,5 @@ export const GIT_LOG: string[] = [
   "7a32d48 Rebuild Twist and Ship scenes",
   "8dfa804 Add motion toolkit: HUD, glitch cuts, scramble text, callouts, floating code",
   "6a87449 Build the proof-of-work edit around the real site footage",
-  "f8c70f4 Add directed capture clips and full-page stills script",
-  "6923159 Add frame-perfect site capture engine",
-  "97b16d8 Scaffold Remotion project with first cut of the proof-of-work video"
+  "f8c70f4 Add directed capture clips and full-page stills script"
 ];

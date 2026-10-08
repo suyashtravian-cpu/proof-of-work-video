@@ -30,7 +30,11 @@ const COMPONENTS: Record<(typeof SCENES)[number]["name"], React.FC> = {
   Ship,
 };
 
-export const ProofOfWork: React.FC = () => (
+// "sfx" renders only the sound effects, so voice and music can be mixed in post
+// (scripts/mix-audio.py ducks the music under the voice).
+export type ProofOfWorkProps = { audio?: "full" | "sfx" };
+
+export const ProofOfWork: React.FC<ProofOfWorkProps> = ({ audio = "full" }) => (
   <AbsoluteFill style={{ background: theme.bg }}>
     {SCENES.map((s) => {
       const Scene = COMPONENTS[s.name];
@@ -49,7 +53,7 @@ export const ProofOfWork: React.FC = () => (
         <Audio src={staticFile(`sfx/${file}.wav`)} volume={volume} />
       </Sequence>
     ))}
-    {VOICEOVER && <Audio src={staticFile(VOICEOVER)} />}
-    {MUSIC && <Audio src={staticFile(MUSIC)} volume={MUSIC_VOLUME} />}
+    {audio === "full" && VOICEOVER && <Audio src={staticFile(VOICEOVER)} />}
+    {audio === "full" && MUSIC && <Audio src={staticFile(MUSIC)} volume={MUSIC_VOLUME} />}
   </AbsoluteFill>
 );

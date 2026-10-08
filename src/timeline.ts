@@ -13,8 +13,8 @@ export const SCENES = [
   { name: "Ship", from: J(42.0), to: J(47.5) },
 ] as const;
 
-// Voiceover file in public/, or null until the ElevenLabs take arrives.
-export const VOICEOVER: string | null = null;
+// Built by scripts/build-voiceover.py from the ElevenLabs take (not committed).
+export const VOICEOVER: string | null = "vo/voiceover.wav";
 // Music is supplied by the user (generated in ElevenLabs or similar); the edit never generates it.
 // Built by scripts/build-music.py (not committed). Odd Beats 01 by Lily J, Mixkit Stock Music Free License:
 //   python3 scripts/build-music.py <722.mp3 from https://assets.mixkit.co/music/722/722.mp3> 0.05 public/music/odd-beats-01.wav
