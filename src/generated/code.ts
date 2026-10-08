@@ -40,7 +40,7 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/Root.tsx",
-    "lines": 34
+    "lines": 36
   },
   {
     "path": "src/components/BrowserFrame.tsx",
@@ -675,6 +675,62 @@ export const TREE: { path: string; lines: number }[] = [
     "lines": 128
   },
   {
+    "path": "src/v5/AdIdeas.tsx",
+    "lines": 72
+  },
+  {
+    "path": "src/v5/components/Chapter.tsx",
+    "lines": 66
+  },
+  {
+    "path": "src/v5/components/rec.tsx",
+    "lines": 170
+  },
+  {
+    "path": "src/v5/scenes/Campaigns.tsx",
+    "lines": 356
+  },
+  {
+    "path": "src/v5/scenes/Cta.tsx",
+    "lines": 237
+  },
+  {
+    "path": "src/v5/scenes/End.tsx",
+    "lines": 285
+  },
+  {
+    "path": "src/v5/scenes/Hook.tsx",
+    "lines": 299
+  },
+  {
+    "path": "src/v5/scenes/Lab.tsx",
+    "lines": 343
+  },
+  {
+    "path": "src/v5/scenes/Making.tsx",
+    "lines": 242
+  },
+  {
+    "path": "src/v5/scenes/OneMind.tsx",
+    "lines": 490
+  },
+  {
+    "path": "src/v5/scenes/Playground.tsx",
+    "lines": 218
+  },
+  {
+    "path": "src/v5/scenes/Work.tsx",
+    "lines": 439
+  },
+  {
+    "path": "src/v5/sfx.ts",
+    "lines": 109
+  },
+  {
+    "path": "src/v5/timing.ts",
+    "lines": 25
+  },
+  {
     "path": "capture/clips/creative.mjs",
     "lines": 71
   },
@@ -719,8 +775,11 @@ export const TREE: { path: string; lines: number }[] = [
     "lines": 61
   }
 ];
-export const TOTAL_LINES = 20244;
+export const TOTAL_LINES = 23597;
 export const GIT_LOG: string[] = [
+  "e071b94 Add AdIdeas: the Meta ad on video 2's scenes and look",
+  "52898c0 Add the frontier ad's full-quality render (Git LFS)",
+  "cc7df74 Refresh code snapshot for the frontier ad render",
   "5278074 Finish the frontier ad's middle scenes",
   "f360cd2 WIP: frontier ad (kit, hook, end card done; middle scenes in progress)",
   "9df4af6 Add the ad's full-quality render",
@@ -729,8 +788,5 @@ export const GIT_LOG: string[] = [
   "59d5b9a Keep the ad voiceover out of git",
   "d351568 Add the paid ad: one person, four jobs, built with AI",
   "5ab5c4c Add full-quality render of the second video (Git LFS)",
-  "d834814 Design all scenes of the second video",
-  "411e130 WIP: second video scene designs in progress",
-  "859887a WIP: second video scene designs in progress",
-  "6c8a5b9 WIP: second video scenes in progress; mixer takes a length and optional voice"
+  "d834814 Design all scenes of the second video"
 ];
