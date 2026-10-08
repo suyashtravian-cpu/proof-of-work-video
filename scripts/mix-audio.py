@@ -2,7 +2,9 @@
 """
 Final mix: sound effects (from an `audio: "sfx"` render) + voiceover + music ducked under the voice.
 
-  python3 scripts/mix-audio.py <sfx-source.mp4|wav> <voiceover.wav> <music.wav> <out.wav>
+  python3 scripts/mix-audio.py <sfx-source.mp4|wav> <voiceover.wav|-> <music.wav> <out.wav> [length_seconds]
+
+Pass "-" for the voiceover to mix music and sound effects only (no ducking).
 
 The music dips DUCK_DB under speech (fast attack, slow release) and the whole mix is
 normalised linearly to -14 LUFS with a -1 dBTP limiter, the usual target for social video.
@@ -18,11 +20,11 @@ DUCK_DB = -9.0
 ATTACK, RELEASE = 0.06, 0.35
 
 
-def decode(path, ch=2):
+def decode(path, ch=2, length=None):
     raw = subprocess.run(["ffmpeg", "-v", "error", "-i", path, "-vn", "-ac", str(ch), "-ar", str(SR), "-f", "f32le", "-"],
                          capture_output=True, check=True).stdout
     x = np.frombuffer(raw, dtype=np.float32).reshape(-1, ch)
-    n = int(LENGTH * SR)
+    n = int((length or LENGTH) * SR)
     out = np.zeros((n, ch), np.float32)
     out[:min(n, len(x))] = x[:n]
     return out
@@ -32,8 +34,10 @@ def db(x):
     return 10 ** (x / 20)
 
 
-def main(sfx_path, vo_path, music_path, out):
-    sfx, vo, music = decode(sfx_path), decode(vo_path), decode(music_path)
+def main(sfx_path, vo_path, music_path, out, length=None):
+    length = float(length) if length else None
+    sfx, music = decode(sfx_path, length=length), decode(music_path, length=length)
+    vo = decode(vo_path, length=length) if vo_path != "-" else np.zeros_like(sfx)
     # Voice activity from a 30 ms RMS envelope.
     win = int(0.03 * SR)
     mono = vo.mean(1)
@@ -60,4 +64,4 @@ def main(sfx_path, vo_path, music_path, out):
 
 
 if __name__ == "__main__":
-    main(*sys.argv[1:5])
+    main(*sys.argv[1:6])
