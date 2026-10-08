@@ -21,7 +21,7 @@ export const HeroWindow: React.FC<{ T: number; offset: number; overlay?: React.R
   const chrome = CHROME * tw(T, 1.72, 2.05, 0, 1, PULL);
   const innerOp = 1 - tw(T, 1.8, 2.08, 0, 1);
   const footOp = tw(T, 1.78, 2.06, 0, 1);
-  const sW = lerp(1, 0.5, p);
+  const sW = lerp(1, 0.9, p);
   const ch = h - chrome;
   const fromF = Math.max(0, sec(HERO_SHOW - offset));
   const trim = sec(HERO_REC_AT + Math.max(0, offset - HERO_SHOW) * HERO_RATE);
@@ -45,8 +45,8 @@ export const HeroWindow: React.FC<{ T: number; offset: number; overlay?: React.R
       {/* inside the site: the deep sky we start in */}
       {innerOp > 0.002 && (
         <div style={{ position: "absolute", left: -x, top: -y, width: 1080, height: 1920, transformOrigin: "540px 760px", transform: `scale(${sW})`, opacity: innerOp }}>
-          <SkyPlate T={T} zoom={1.32 + T * 0.03} y={-170} />
-          <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 55% at 50% 47%, rgba(188,165,238,.16), rgba(9,13,37,0) 70%)" }} />
+          <SkyPlate T={T} zoom={1.32 + T * 0.03} y={150 - T * 20} />
+          <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 55% at 50% 47%, rgba(188,165,238,.14), rgba(9,13,37,0) 70%), radial-gradient(ellipse 75% 60% at 50% 50%, rgba(9,13,37,0) 55%, rgba(9,13,37,.55) 100%)" }} />
           <Streaks T={T} opacity={1 - tw(T, 1.35, 1.7, 0, 1)} cx={540} cy={905} />
           <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
             <Sweep k={tw(T, 0.15, 1.25, 0, 1)} width={520} strength={0.16} angle={112} span={2200} />

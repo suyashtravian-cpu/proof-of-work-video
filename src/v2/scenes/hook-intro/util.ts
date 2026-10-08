@@ -47,6 +47,7 @@ export const winPose = (T: number): Pose => {
   let rx = live * 3 * Math.sin(u * 1.05 + 0.6);
   let ry = live * 5 * Math.sin(u * 1.3);
   let op = 1;
+  s *= 1 + 0.04 * tw(T, 2.1, 3.3, 0, 1, (x) => x);
   // Intro: push in toward the name in the corner of the site.
   const push = tw(T, 3.2, 4.25, 0, 1);
   s *= 1 + 0.16 * push;

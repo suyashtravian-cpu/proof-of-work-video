@@ -304,27 +304,27 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/v2/scenes/After.tsx",
-    "lines": 5
+    "lines": 156
   },
   {
     "path": "src/v2/scenes/Campaigns.tsx",
-    "lines": 5
+    "lines": 309
   },
   {
     "path": "src/v2/scenes/Cta.tsx",
-    "lines": 5
+    "lines": 366
   },
   {
     "path": "src/v2/scenes/End.tsx",
-    "lines": 5
+    "lines": 226
   },
   {
     "path": "src/v2/scenes/Hook.tsx",
-    "lines": 5
+    "lines": 39
   },
   {
     "path": "src/v2/scenes/Intro.tsx",
-    "lines": 5
+    "lines": 40
   },
   {
     "path": "src/v2/scenes/Lab.tsx",
@@ -332,7 +332,7 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/v2/scenes/Making.tsx",
-    "lines": 5
+    "lines": 249
   },
   {
     "path": "src/v2/scenes/Manifesto.tsx",
@@ -340,15 +340,75 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/v2/scenes/OneMind.tsx",
-    "lines": 5
+    "lines": 466
   },
   {
     "path": "src/v2/scenes/Playground.tsx",
-    "lines": 5
+    "lines": 302
   },
   {
     "path": "src/v2/scenes/Work.tsx",
     "lines": 5
+  },
+  {
+    "path": "src/v2/scenes/after-making-playground/kit.tsx",
+    "lines": 303
+  },
+  {
+    "path": "src/v2/scenes/campaigns-lab/Numeral.tsx",
+    "lines": 52
+  },
+  {
+    "path": "src/v2/scenes/campaigns-lab/kit.tsx",
+    "lines": 497
+  },
+  {
+    "path": "src/v2/scenes/campaigns-lab/scroll.ts",
+    "lines": 23
+  },
+  {
+    "path": "src/v2/scenes/campaigns-lab/scrollData.ts",
+    "lines": 8
+  },
+  {
+    "path": "src/v2/scenes/hook-intro/HeroWindow.tsx",
+    "lines": 99
+  },
+  {
+    "path": "src/v2/scenes/hook-intro/NameCard.tsx",
+    "lines": 104
+  },
+  {
+    "path": "src/v2/scenes/hook-intro/Stage.tsx",
+    "lines": 29
+  },
+  {
+    "path": "src/v2/scenes/hook-intro/WhatIf.tsx",
+    "lines": 273
+  },
+  {
+    "path": "src/v2/scenes/hook-intro/Words.tsx",
+    "lines": 225
+  },
+  {
+    "path": "src/v2/scenes/hook-intro/World.tsx",
+    "lines": 313
+  },
+  {
+    "path": "src/v2/scenes/hook-intro/util.ts",
+    "lines": 82
+  },
+  {
+    "path": "src/v2/scenes/manifesto-work/kit.tsx",
+    "lines": 292
+  },
+  {
+    "path": "src/v2/scenes/onemind-cta-end/Backdrop.tsx",
+    "lines": 167
+  },
+  {
+    "path": "src/v2/scenes/onemind-cta-end/kit.ts",
+    "lines": 97
   },
   {
     "path": "src/v2/script.ts",
@@ -356,7 +416,7 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/v2/sfx/after.ts",
-    "lines": 5
+    "lines": 12
   },
   {
     "path": "src/v2/sfx/campaigns.ts",
@@ -364,15 +424,15 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/v2/sfx/cta.ts",
-    "lines": 5
+    "lines": 20
   },
   {
     "path": "src/v2/sfx/end.ts",
-    "lines": 5
+    "lines": 8
   },
   {
     "path": "src/v2/sfx/hook.ts",
-    "lines": 5
+    "lines": 13
   },
   {
     "path": "src/v2/sfx/index.ts",
@@ -380,7 +440,7 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/v2/sfx/intro.ts",
-    "lines": 5
+    "lines": 16
   },
   {
     "path": "src/v2/sfx/lab.ts",
@@ -388,7 +448,7 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/v2/sfx/making.ts",
-    "lines": 5
+    "lines": 14
   },
   {
     "path": "src/v2/sfx/manifesto.ts",
@@ -396,11 +456,11 @@ export const TREE: { path: string; lines: number }[] = [
   },
   {
     "path": "src/v2/sfx/onemind.ts",
-    "lines": 5
+    "lines": 19
   },
   {
     "path": "src/v2/sfx/playground.ts",
-    "lines": 5
+    "lines": 17
   },
   {
     "path": "src/v2/sfx/work.ts",
@@ -459,8 +519,11 @@ export const TREE: { path: string; lines: number }[] = [
     "lines": 59
   }
 ];
-export const TOTAL_LINES = 8696;
+export const TOTAL_LINES = 13447;
 export const GIT_LOG: string[] = [
+  "859887a WIP: second video scene designs in progress",
+  "6c8a5b9 WIP: second video scenes in progress; mixer takes a length and optional voice",
+  "f59f2f0 Start the second video: Ideas don't sit still",
   "11ff6ac Update full-quality renders with the voiceover",
   "84bae7f Add the voiceover: line-by-line placement, real caption timing, ducked mix",
   "11c061a Add full-quality renders with music (Git LFS)",
@@ -469,8 +532,5 @@ export const GIT_LOG: string[] = [
   "9be6614 Rebuild Proof, Skills and Bet scenes",
   "6c890db WIP: proof and skills/bet scene rebuilds in progress",
   "f56acd8 Match-cut the Hook's push-in into the Résumé scene",
-  "4eafca0 WIP: scene rebuilds in progress (hook, résumé/prompt, proof, skills/bet)",
-  "1412fcb Use the 4K mobile capture and commit QA'd capture clips",
-  "7a32d48 Rebuild Twist and Ship scenes",
-  "8dfa804 Add motion toolkit: HUD, glitch cuts, scramble text, callouts, floating code"
+  "4eafca0 WIP: scene rebuilds in progress (hook, résumé/prompt, proof, skills/bet)"
 ];
