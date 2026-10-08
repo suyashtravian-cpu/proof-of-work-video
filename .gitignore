@@ -20,3 +20,5 @@ public/v2/*.png
 
 # Ad voiceover (user audio), kept out of git.
 public/v3/*.mp3
+
+public/v3/*.wav
