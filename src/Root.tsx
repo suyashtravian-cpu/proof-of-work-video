@@ -1,6 +1,7 @@
 import { Composition } from "remotion";
 import { ProofOfWork } from "./ProofOfWork";
 import { IdeasVideo } from "./v2/IdeasVideo";
+import { AdVideo, LENGTH3 } from "./v3/AdVideo";
 import { LENGTH2 } from "./v2/timeline";
 import { FPS, TOTAL_SECONDS, sec } from "./timing";
 
@@ -24,5 +25,6 @@ export const RemotionRoot: React.FC = () => (
       width={1080}
       height={1920}
     />
+    <Composition id="AdVertical" component={AdVideo} durationInFrames={sec(LENGTH3)} fps={FPS} width={1080} height={1920} />
   </>
 );

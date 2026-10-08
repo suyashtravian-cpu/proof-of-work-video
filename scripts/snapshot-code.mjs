@@ -9,6 +9,7 @@ const files = [
   ["ProofOfWork.tsx", "src/ProofOfWork.tsx"],
   ["timeline.ts", "src/timeline.ts"],
   ["Twist.tsx", "src/scenes/Twist.tsx"],
+  ["AdVideo.tsx", "src/v3/AdVideo.tsx"],
   ["Proof.tsx", "src/scenes/Proof.tsx"],
   ["engine.mjs", "capture/engine.mjs"],
   ["Shatter.tsx", "src/components/Shatter.tsx"],
