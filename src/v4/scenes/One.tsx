@@ -3,7 +3,7 @@ import { shakeAt } from "../../fx/shake";
 import { Thinking } from "../kit/Thinking";
 import { OT } from "./one-two/beats";
 import { Days } from "./one-two/Days";
-import { Deck, DECK, Tracking } from "./one-two/Deck";
+import { Deck, ROW_Y, Tracking } from "./one-two/Deck";
 
 // 4.8–9.75  1/4 PRODUCTS. "One. I build products. | From idea to live in days, not months."
 // (⌘K "build product" is the composition's; this scene's content starts at enterAt = 0.56.)
@@ -19,7 +19,8 @@ export const One: React.FC = () => {
   return (
     <AbsoluteFill style={{ overflow: "hidden" }}>
       <AbsoluteFill style={{ transform: `translate(${sx}px, ${sy}px) rotate(${sr}deg)`, transformOrigin: "540px 760px" }}>
-        <Thinking at={OT.think} dur={0.4} y={DECK.cy} text="thinking · planning 3 deploys…" size={30} />
+        {/* just under the receipt row, clear of the ⌘K palette that is still flying out; deploy(biltib) takes over */}
+        <Thinking at={OT.think} dur={OT.slams[0] + 0.01 - OT.think} y={ROW_Y + 30} text="thinking · planning 3 deploys…" size={30} />
         <Deck t={t} />
         <Tracking t={t} frame={f} />
         <Days t={t} />

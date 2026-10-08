@@ -69,9 +69,9 @@ const viewAt = (t: number): View => {
 
 /** Reddit's real number, decoding big; ✓ snapshot stamp; "$0.03 / click" on "pennies". */
 const Clicks: React.FC<{ t: number }> = ({ t }) => {
-  if (t < T4.recede || t > T4.real + 0.2) return null;
+  if (t < T4.recede || t > T4.real) return null;
   const k = pop(t, T4.recede, 0.24);
-  const out = prog(t, T4.real - 0.1, T4.real + 0.14, easeIn3);
+  const out = prog(t, T4.real - 0.22, T4.real - 0.02, easeIn3); // clears in the pause before "Real"
   const [sx, sy, sr] = shakeAt(t, [T4.land], 26, 0.32);
   const [px, py] = shakeAt(t, [T4.pennies], 12, 0.22);
   const landed = t >= T4.land;
@@ -154,14 +154,15 @@ const Notice: React.FC<{ t: number }> = ({ t }) => {
   const k = pop(t, at - 0.02, 0.26);
   const ring = clamp01((t - at) / 0.5);
   const float = 5 * Math.sin((t - at) * 4);
+  const push = 0.05 * prog(t, at + 0.2, T4.end);
   return (
     <div
       style={{
         position: "absolute",
         left: 540,
         top: 640 + float,
-        width: 800,
-        transform: `translate(-50%, -50%) translateY(${(1 - k) * -90}px) scale(${0.88 + 0.12 * k})`,
+        width: 860,
+        transform: `translate(-50%, -50%) translateY(${(1 - k) * -90}px) scale(${(0.88 + 0.12 * k) * (1 + push)})`,
         opacity: clamp01(k * 2.5),
         display: "flex",
         alignItems: "center",
@@ -173,12 +174,12 @@ const Notice: React.FC<{ t: number }> = ({ t }) => {
         boxShadow: "0 40px 100px rgba(0,0,0,.7), 0 0 60px rgba(255,255,255,.06)",
       }}
     >
-      <div style={{ position: "relative", width: 84, height: 84, flex: "none" }}>
-        <div style={{ position: "absolute", inset: 0, borderRadius: 42, background: C.red, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: C.sans, fontWeight: 800, fontSize: 46 }}>✓</div>
-        {ring < 1 && <div style={{ position: "absolute", left: -ring * 40, top: -ring * 40, width: 84 + ring * 80, height: 84 + ring * 80, borderRadius: "50%", border: `3px solid ${C.red}`, opacity: 1 - ring }} />}
+      <div style={{ position: "relative", width: 92, height: 92, flex: "none" }}>
+        <div style={{ position: "absolute", inset: 0, borderRadius: 46, background: C.red, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: C.sans, fontWeight: 800, fontSize: 50 }}>✓</div>
+        {ring < 1 && <div style={{ position: "absolute", left: -ring * 40, top: -ring * 40, width: 92 + ring * 80, height: 92 + ring * 80, borderRadius: "50%", border: `3px solid ${C.red}`, opacity: 1 - ring }} />}
       </div>
       <div style={{ flex: 1 }}>
-        <div style={{ fontFamily: C.sans, fontWeight: 800, fontSize: 54, letterSpacing: "-0.035em", color: C.white, lineHeight: 1.05 }}>New sign-up</div>
+        <div style={{ fontFamily: C.sans, fontWeight: 800, fontSize: 60, letterSpacing: "-0.035em", color: C.white, lineHeight: 1.05 }}>New sign-up</div>
         <div style={{ fontFamily: C.mono, fontSize: 22, letterSpacing: "0.1em", color: C.dim, marginTop: 6 }}>just now</div>
       </div>
       <span style={{ width: 16, height: 16, borderRadius: 8, background: C.red, opacity: Math.floor((t - at) * 4) % 2 ? 0.35 : 1, boxShadow: `0 0 14px ${C.redGlow}` }} />
@@ -191,17 +192,19 @@ export const Four: React.FC = () => {
   const view = viewAt(t);
   const rec = prog(t, T4.recede - 0.02, T4.recede + 0.3, easeExpo);
   const press = CH.reduce((a, ch) => a + kick(t, ch.c, 0.006, 30, 12), 0);
-  const flash = Math.max(0, 1 - Math.abs(t - T4.land) / 0.14) * 0.55;
+  const flash = Math.max(0, 1 - Math.abs(t - T4.land) / 0.12) * 0.4;
+  // gone once 1,999 lands, so no other campaign's number ghosts behind it
+  const gone = prog(t, T4.land - 0.05, T4.land + 0.2);
   return (
     <AbsoluteFill style={{ overflow: "hidden" }}>
       {/* the browser, its chips and the cursor share one transform so clicks stay on the tabs */}
-      {rec < 1 && (
+      {gone < 1 && (
         <AbsoluteFill
           style={{
             transformOrigin: "540px 720px",
             transform: `translateY(${4 * Math.sin(t * 1.6) + rec * 70}px) rotate(${0.25 * Math.sin(t * 1.1)}deg) scale(${(1 - press) * (1 - 0.16 * rec)})`,
-            opacity: 1 - 0.84 * rec,
-            filter: rec > 0.03 ? `blur(${(rec * 6).toFixed(1)}px)` : undefined,
+            opacity: (1 - 0.8 * rec) * (1 - gone),
+            filter: rec > 0.03 ? `blur(${(rec * 9).toFixed(1)}px)` : undefined,
           }}
         >
           <div style={{ position: "absolute", left: WIN.x, top: WIN.y }}>

@@ -53,7 +53,7 @@ const PATH: CursorKey[] = [
   { t: T3.drop2 + 0.03, x: g2b.x, y: g2b.y, down: false },
   { t: T3.count[1], x: g2b.x + 60, y: g2b.y + 150 },
   { t: T3.stop, x: REEL.x, y: REEL.y, click: true, arc: 60 },
-  { t: T3.stop + 0.3, x: 1000, y: 1120, ease: easeIn3 },
+  { t: T3.punch + 0.12, x: 1010, y: 1120, ease: easeIn3 },
 ];
 
 /** Window pose while the cursor drags it (the grab point stays under the cursor tip). */
@@ -153,7 +153,7 @@ export const Three: React.FC = () => {
   const camY = -78 * pk;
   const [sx, sy, sr] = shakeAt(t, [T3.punch], 26, 0.32);
   const [dx, dy] = shakeAt(t, [T3.drop1, T3.drop2], 7, 0.18);
-  const flash = Math.max(0, 1 - Math.abs(t - T3.punch) / 0.12) * 0.5;
+  const flash = Math.max(0, 1 - Math.abs(t - T3.punch) / 0.1) * 0.3;
   const arcDim = 0.2 + 0.55 * pk;
   const lock = prog(t, T3.punch + 0.04, T3.punch + 0.22, easeExpo);
 
@@ -182,7 +182,7 @@ export const Three: React.FC = () => {
       <Counter t={t} />
       <ToolChip at={T3.drop1} out={T3.grab2 + 0.12} x={CRE_SLOT.x - W / 2} y={1084} name="stack" arg="creative" took="0.4s" resolve={0.16} />
       <ToolChip at={T3.drop2} out={T3.count[0] - 0.12} x={CRE_SLOT.x - W / 2} y={1084} name="stack" arg="archive" took="0.4s" resolve={0.16} />
-      <AiCursor path={PATH} until={T3.stop + 0.3} />
+      <AiCursor path={PATH} until={T3.punch + 0.12} />
       <AbsoluteFill style={{ background: "#fff", opacity: flash, pointerEvents: "none" }} />
     </AbsoluteFill>
   );

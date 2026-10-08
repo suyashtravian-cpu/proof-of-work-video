@@ -4,9 +4,11 @@ import { at, enterAt, L, S } from "../../timing";
 
 /**
  * "stop": the aligner puts it at 18.31. Measured on the waveform (4-11 kHz band): the "s" runs
- * 18.38-18.52, the vowel lands at 18.58, "for" at 18.78.
+ * 18.38-18.52, the "t" closes 18.53-18.56, the vowel lands at 18.58, "for" at 18.78.
+ * The cursor taps on the "s"; the punch-in lands on the "t" burst, where the word is heard.
  */
 const STOP_S = 18.38;
+const STOP_HIT = 18.55;
 
 /** 3/4 CREATIVE (15.45-19.22) "Three. Creative and content people actually stop for." */
 export const T3 = {
@@ -21,9 +23,9 @@ export const T3 = {
   drop2: 1.92,
   /** experiment counter ticks 01 → 10 */
   count: [2.3, 2.74] as const,
-  /** the cursor clicks the reel on the "s" of "stop"; the camera punches in on the vowel */
+  /** the cursor clicks the reel on the "s" of "stop"; the camera punches in on the "t" */
   stop: STOP_S - S.three[0],
-  punch: STOP_S - S.three[0] + 0.05,
+  punch: STOP_HIT - S.three[0],
   end: S.three[1] - S.three[0],
 };
 

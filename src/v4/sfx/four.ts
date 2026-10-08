@@ -18,6 +18,7 @@ export const cues: Cue[] = [
   ["shatter", T4.land, 0.45],
   ["click", T4.snap, 0.45], // ✓ snapshot stamp
   ["hit", T4.pennies, 0.65], // $0.03 / click
+  ["whoosh", T4.real - 0.24, 0.2], // 1,999 clears
   ["shimmer", T4.real, 0.5], // the sign-up notification
   ["click", T4.real, 0.3],
 ];

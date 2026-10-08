@@ -73,12 +73,6 @@ const Strip: React.FC<{ t: number }> = ({ t }) => {
                   <div style={{ fontFamily: C.mono, fontSize: 22, letterSpacing: "0.14em", color: C.fg }}>THIS AD</div>
                 </div>
               )}
-              <div style={{ position: "absolute", left: 0, right: 0, top: TH + 74, display: "flex", justifyContent: "space-between", fontFamily: C.mono, fontSize: 17, letterSpacing: "0.08em", color: slot ? "#9a9a9a" : C.red }}>
-                <span>
-                  {String(k + 1).padStart(2, "0")} {slot ? slot.name : "NOW"}
-                </span>
-                <span>{tc(slot ? S[slot.id][0] : S.payoff[0])}</span>
-              </div>
             </div>
           );
         })}
@@ -96,7 +90,7 @@ const RewindHud: React.FC<{ t: number }> = ({ t }) => {
   const landed = t >= b;
   return (
     <div style={{ position: "absolute", left: 80, right: 80, top: 950, display: "flex", alignItems: "baseline", justifyContent: "space-between", opacity: k, fontFamily: C.mono, fontSize: 38, letterSpacing: "0.04em" }}>
-      <span style={{ color: landed ? C.red : C.fg }}>{landed ? "■ 00:00:00" : `◀◀ REWIND ×${Math.max(1, Math.round(speed))}`}</span>
+      <span style={{ color: landed ? C.red : C.fg }}>{landed ? <Scramble text="▶ THIS AD" at={b - 0.04} dur={0.1} /> : `◀◀ REWIND ×${Math.max(1, Math.round(speed))}`}</span>
       <span style={{ color: landed ? C.red : "#bdbdbd", fontVariantNumeric: "tabular-nums" }}>{tc(headAt(t))}</span>
     </div>
   );

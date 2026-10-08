@@ -206,7 +206,7 @@ const FitBody: React.FC<{ t: number }> = ({ t }) => {
             <span style={{ color: C.red }}>✓</span>32 / Regular
           </>
         ) : (
-          "— / —"
+          "-- / --"
         )}
       </div>
     </>

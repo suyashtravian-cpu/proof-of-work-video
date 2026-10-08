@@ -5,10 +5,11 @@ import { at, enterAt, L } from "../../timing";
 
 // ---------- 1/4 PRODUCTS (4.8–9.75): "One. I build products. | From idea to live in days, not months." ----------
 const I_AT = at("one", L.products, "I"); // 0.95
+const IDEA = at("one", L.days, "idea"); // 2.36
 export const OT = {
-  think: enterAt("one"), // 0.56: thinking line while the scene arrives
-  /** each live site slams in (deploy() ✓ lands on the slam) */
-  slams: [I_AT, I_AT + 0.6, I_AT + 1.2],
+  think: enterAt("one") + 0.04, // 0.6: thinking line while the ⌘K palette flies out (0.36 s, gone as Biltib slams)
+  /** each live site slams in (deploy() ✓ lands on the slam): "I", between "products" and "From", "idea" */
+  slams: [I_AT, I_AT + 0.66, IDEA],
   /** "live": the brackets open around all three builds */
   live: at("one", L.days, "live"), // 3.04
   /** "in": the deck flies back into depth */

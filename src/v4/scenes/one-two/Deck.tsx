@@ -22,6 +22,8 @@ export const PW = 940;
 const K = PW / CROP.w;
 export const PH = CROP.h * K;
 export const DECK = { cx: 540, cy: 690 };
+/** Centre line of the receipt row under the front build (LIVE BUILD label + deploy() chip). */
+export const ROW_Y = DECK.cy + PH / 2 + 14 + 44;
 /** depth levels: 0 = front (newest), 1, 2 = stepped back and up */
 const LV_Y = [0, -96, -178];
 const LV_S = [1, 0.86, 0.74];
@@ -86,7 +88,7 @@ const Site: React.FC<{ i: number; t: number }> = ({ i, t }) => {
 export const Deck: React.FC<{ t: number }> = ({ t }) => {
   const away = awayAt(t);
   if (away >= 1) return null;
-  const push = 1 + 0.03 * prog(t, OT.slams[0], OT.away);
+  const push = 1 + 0.06 * prog(t, OT.slams[0], OT.away);
   return (
     <div
       style={{
@@ -136,7 +138,7 @@ export const Tracking: React.FC<{ t: number; frame: number }> = ({ t, frame }) =
   const deckTop = DECK.cy + LV_Y[2] - (PH * LV_S[2]) / 2;
   const box = { x0: front.x0 - pad, y0: lerp(front.y0, deckTop, open) - pad, x1: front.x1 + pad, y1: front.y1 + pad };
   const flick = t - last < 0.1 ? (frame % 2 ? 0.35 : 1) : 1;
-  const rowY = front.y1 + 14 + 44;
+  const rowY = ROW_Y;
   const fade = 1 - clamp01(away * 3);
   const label = open > 0 ? "● 3 / 3 LIVE" : `● LIVE BUILD 0${n}`;
   const labelAt = open > 0 ? OT.live : last;
