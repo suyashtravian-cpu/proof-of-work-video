@@ -17,3 +17,6 @@ public/vo/
 # v2 screen recording and site image (the user's own media), kept out of git.
 public/v2/*.mp4
 public/v2/*.png
+
+# Ad voiceover (user audio), kept out of git.
+public/v3/*.mp3
