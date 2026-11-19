@@ -13,7 +13,7 @@ export async function initPhysics() { if (!RAPIER) { const m = await import('../
 function mkRoot(v, group, scene) {
   if (!shGeo) { shGeo = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2); shMat = new THREE.MeshBasicMaterial({ map: blobTex(), transparent: true, depthWrite: false, opacity: ctx.q.shadows && !ctx.world.theme.night ? 0.45 : 0.8, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 }); }
   v.root = new THREE.Group(); v.car = group; v.root.add(group); const sh = new THREE.Mesh(shGeo, shMat); sh.scale.set(v.dims.hw * 2.9, 1, v.dims.hl * 2.5); sh.position.y = 0.04; sh.renderOrder = 1; v.shadow = sh; v.root.add(sh); scene.add(v.root);
-  if (ctx.q.shadows) group.traverse(o => { if (o.isMesh) o.castShadow = true; });
+  if (ctx.q.shadows) group.traverse(o => { if (o.isMesh && !o.userData.noDeform) o.castShadow = true; });
 }
 
 // ---------- damage: dent the body mesh around an impact point (car-local coordinates)
@@ -35,7 +35,8 @@ export function wreckVehicle(v, lin, ang, hit) {
   fx.sparks3(v.x, v.y + 0.5, v.z, lin.x * 0.5, 4, lin.z * 0.5, 30, 8 + spd * 0.12, 0.8); fx.debris(v.x, v.y, v.z, lin.x * 0.6, 4, lin.z * 0.6, v.kind === 'traffic' ? 4 : 8, 6 + spd * 0.08, v.y);
   for (let i = 0; i < 3; i++) fx.puff(v.x + rand(-1, 1), v.y + 0.6, v.z + rand(-1, 1), lin.x * 0.2 + rand(-2, 2), rand(1, 3), lin.z * 0.2 + rand(-2, 2), 0.35, 3, 1.6, 0.5);
   if (hit) crumple(v, hit[0], hit[1], hit[2], Math.max(1.3, v.dims.hw * 1.6), 0.45);
-  if (v.inst) for (const p of v.inst.parts) if (Math.random() < 0.7) fx.part(p, lin.x * 0.7 + rand(-4, 4), rand(3, 8), lin.z * 0.7 + rand(-4, 4), v.y);
+  if (v.inst && v.inst.hover) v.inst.hover.crash(v, lin);
+  else if (v.inst) for (const p of v.inst.parts) if (Math.random() < 0.7) fx.part(p, lin.x * 0.7 + rand(-4, 4), rand(3, 8), lin.z * 0.7 + rand(-4, 4), v.y);
   return w;
 }
 function wallLaunch(v, sd, vx, vz) {
@@ -107,7 +108,7 @@ export class Player {
     this.gy = gy;
   }
   respawn() {
-    const tr = this.track, fxm = ctx.fx; ctx.wrecks.removeOf(this); restore(this); fxm.restoreParts(this.inst); const s = tr.wrap(this.s + 10); let d = tr.lane(0), best = -1;
+    const tr = this.track, fxm = ctx.fx; ctx.wrecks.removeOf(this); restore(this); fxm.restoreParts(this.inst); if (this.inst.hover) this.inst.hover.reset(); const s = tr.wrap(this.s + 10); let d = tr.lane(0), best = -1;
     for (let k = 0; k < tr.lanes; k++) { const ld = tr.lane(k); let free = 300; for (const o of ctx.traffic.list) { if (o.state === 'gone' || Math.abs(o.d - ld) > 1.6) continue; const ds = tr.delta(o.s, s); if (ds > -12 && ds < free) free = ds; } if (free > best) { best = free; d = ld; } }
     this.prog += tr.delta(s, this.crashS); this.put(tr, s, d, Math.max(30, this.cfg.vmax * 0.55)); this.invuln = 2.2; this.pitch = this.roll = 0; this.shadow.visible = true; this.shoved = 0;
   }
@@ -124,8 +125,9 @@ export class Player {
     this.pitch = damp(this.pitch, pt, 10, rdt); this.roll = damp(this.roll, -this.steerFx * 0.05 * clamp(spd / 40, 0, 1) - this.slipFx * 0.1, 8, rdt);
     this.root.position.set(this.x, this.y, this.z); this.root.rotation.set(this.pitch, this.yaw, 0, 'YXZ'); this.car.rotation.z = this.roll; this.shadow.position.y = 0.04 - (this.y - T.y);
     this.root.visible = this.invuln <= 0 || Math.floor(ctx.time * 14) % 2 === 0;
+    const hv = this.inst.hover; if (hv) hv.frame(rdt, -this.steerFx * 0.13 * clamp(spd / 40, 0, 1) - this.slipFx * 0.12, this.boosting);
     const fx = Math.sin(this.yaw), fz = Math.cos(this.yaw), vf = this.vx * fx + this.vz * fz; for (const w of this.inst.wheels) { w.spin.rotation.x += vf / w.r * dt; if (w.front) w.steer.rotation.y = -this.steerFx * 0.36; }
-    if (this.boosting) for (const sd of [-1, 1]) { const lx = sd * this.dims.hw * 0.45, lz = -this.dims.hl - 0.15; fxm.glow.emit(this.x + lx * fz + lz * fx, this.y + 0.38, this.z - lx * fx + lz * fz, this.vx * 0.82 + rand(-1, 1), rand(-0.5, 0.5), this.vz * 0.82 + rand(-1, 1), 0.13, 1.5, 0.3, 1.4, 2.6, 6, 0.9); }
+    if (this.boosting) for (const sd of [-1, 1]) { const lx = sd * (hv ? 0.62 : this.dims.hw * 0.45), lz = -this.dims.hl - 0.15; fxm.glow.emit(this.x + lx * fz + lz * fx, this.y + (hv ? 0.82 : 0.38), this.z - lx * fx + lz * fz, this.vx * 0.82 + rand(-1, 1), rand(-0.5, 0.5), this.vz * 0.82 + rand(-1, 1), 0.13, 1.5, 0.3, 1.4, 2.6, 6, 0.9); }
   }
 }
 
@@ -144,6 +146,7 @@ const glowTex2 = () => { if (glowC) return glowC; const c = document.createEleme
 function mkMarker(r, scene) {
   const col = r.inst.color ?? 0xff3355; r.col = col; r.mkKey = ''; r.mkT = -9;
   const sp = new THREE.Sprite(new THREE.SpriteMaterial({ depthTest: false, depthWrite: false, transparent: true, sizeAttenuation: false })); sp.renderOrder = 999; sp.scale.set(0.155, 0.068, 1); scene.add(sp); r.mk = sp;
+  if (r.inst.hover) { r.glow = r.inst.hover.under; r.streakC = new THREE.Color(col); return; }
   const gl = new THREE.Mesh(new THREE.PlaneGeometry(r.dims.hw * 2 + 1.6, r.dims.hl * 2 + 1.4), new THREE.MeshBasicMaterial({ map: glowTex2(), color: col, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false }));
   gl.rotation.x = -Math.PI / 2; gl.position.y = 0.07; gl.renderOrder = 2; gl.userData.noDeform = 1; r.inst.group.add(gl); r.glow = gl; }
 function markRivals() { const rivals = ctx.rivals, P = ctx.player; if (!rivals || !rivals.length || !P) return; const race = ctx.mode === 'race' || ctx.mode === 'cutoff', all = (ctx.players || [P]).concat(rivals), t = ctx.time;
@@ -205,7 +208,7 @@ export class Rival {
     this.respT = respTime(); if (this.wreck) this.wreck.credit = credit; ctx.ev.rivalCrash(this, cause, credit);
   }
   respawn() {
-    const tr = this.track, P = ctx.player; ctx.wrecks.removeOf(this); restore(this); ctx.fx.restoreParts(this.inst); let s = tr.wrap(this.s + 12);
+    const tr = this.track, P = ctx.player; ctx.wrecks.removeOf(this); restore(this); ctx.fx.restoreParts(this.inst); if (this.inst.hover) this.inst.hover.reset(); let s = tr.wrap(this.s + 12);
     if (fight()) { this.spawnAhead = Math.random() < 0.7; s = tr.wrap(P.s + (this.spawnAhead ? 160 + Math.random() * 80 : -50 - Math.random() * 20)); }
     this.prog += tr.delta(s, this.crashS ?? this.s); this.state = 'drive'; this.s = s; this.d = this.targetD = tr.lane(this.i % tr.lanes); this.dv = 0; this.v = fight() ? (this.spawnAhead ? Math.max(30, P.speed * 0.8) : Math.max(40, P.speed * 1.05)) : 34; this.ghost = 1.6; this.stun = 0; this.pin = 0; this.root.rotation.set(0, 0, 0); this.car.position.y = 0; this.shadow.visible = true; this.pose(); if (ctx.ev.respawn) ctx.ev.respawn(this);
   }
@@ -213,7 +216,8 @@ export class Rival {
     if (this.state !== 'drive') return; this.pitch = damp(this.pitch, -Math.atan(this.slope), 10, dt);
     this.root.position.set(this.x, this.y, this.z); this.root.rotation.set(this.pitch, this.yaw, 0, 'YXZ'); this.car.rotation.z = clamp(-this.dv * 0.012, -0.08, 0.08); this.root.visible = this.ghost <= 0 || Math.floor(ctx.time * 14) % 2 === 0;
     for (const w of this.inst.wheels) { w.spin.rotation.x += this.v / w.r * dt; if (w.front) w.steer.rotation.y = clamp(-this.dv * 0.05, -0.3, 0.3); }
-    if (this.fast) { const fx = Math.sin(this.yaw), fz = Math.cos(this.yaw), lz = -this.dims.hl - 0.15; ctx.fx.glow.emit(this.x + lz * fx, this.y + 0.38, this.z + lz * fz, this.vx * 0.82, 0, this.vz * 0.82, 0.12, 1.5, 0.3, 4, 2, 0.6, 0.8); }
+    const hv = this.inst.hover; if (hv) hv.frame(dt, clamp(-this.dv * 0.03, -0.16, 0.16), this.fast);
+    if (this.fast) { const fx = Math.sin(this.yaw), fz = Math.cos(this.yaw), lz = -this.dims.hl - 0.15; ctx.fx.glow.emit(this.x + lz * fx, this.y + (hv ? 0.8 : 0.38), this.z + lz * fz, this.vx * 0.82, 0, this.vz * 0.82, 0.12, 1.5, 0.3, 4, 2, 0.6, 0.8); }
   }
 }
 

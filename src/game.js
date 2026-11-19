@@ -6,6 +6,10 @@ import { CITIES, buildWorld } from './track.js';
 import { FX, Post, Cam, LightTrail, CarStreaks, INTRO_T } from './fx.js';
 import { Player, Rival, Traffic, Wrecks, simulate, drawLights, initPhysics, wreckVehicle, wreckPlayer } from './vehicles.js';
 import { audio } from './audio.js';
+import { makeCraft, rivalLook, HOVER_P1, HOVER_P2 } from './craft.js';
+
+// HOVER (default): the player flies Twinblade, rivals fly Obsidian / Ronin / Mantis. Same physics as the cars.
+const hoverOn = () => (save.opts.veh || 'hover') === 'hover';
 
 const EVENTS = [], ORDER = ['coast', 'desert', 'neon', 'snow'], UNLOCK = { coast: 0, desert: 2, neon: 4, snow: 7 }, MEDAL = ['none', 'bronze', 'silver', 'gold'], COL = { neon: '#ff2e88', desert: '#ff9a1f', coast: '#19c8ff', snow: '#cfe4ff' };
 for (const c of ORDER) EVENTS.push({ id: c + '-race', city: c, mode: 'race', name: 'RACE', desc: '2 laps against 7 rivals' }, { id: c + '-brawl', city: c, mode: 'brawl', name: 'BRAWL', desc: 'Rivals keep coming. Wreck them first', targets: [6, 14, 24], traffic: true }, { id: c + '-openbrawl', city: c, mode: 'brawl', name: 'OPEN BRAWL', desc: 'No traffic. Just you and the pack', targets: [8, 18, 30], traffic: false }, { id: c + '-pile', city: c, mode: 'pile', name: 'PILE-UP', desc: 'Cause the most expensive crash', targets: c === 'desert' ? [600000, 1300000, 2600000] : [400000, 900000, 1800000] });
@@ -44,7 +48,7 @@ async function buildMenu() {
   const key = new THREE.DirectionalLight(0xffffff, 3); key.position.set(4, 8, 5); const rim = new THREE.DirectionalLight(0x19f07a, 1.6); rim.position.set(-6, 3, -5); const fill = new THREE.DirectionalLight(0x6fa8ff, 1.1); fill.position.set(-4, 4, 6); scene.add(key, rim, fill, new THREE.HemisphereLight(0x8fa3c8, 0x101016, 0.8));
   menu = { scene, car: null, id: null, holder: new THREE.Group() }; scene.add(menu.holder);
 }
-async function setMenuCar(id) { const col = save.paint[id] ?? CARS[id].color ?? null; if (menu.id === id && menu.car) return menu.car.setPaint(col); menu.id = id; const inst = await makeCar(id, col); if (menu.id !== id) return; menu.holder.clear(); menu.holder.add(inst.group); menu.car = inst; }
+async function setMenuCar(id) { const col = save.paint[id] ?? CARS[id].color ?? null, hv = hoverOn(), key = (hv ? 'h:' : '') + id; if (menu.id === key && menu.car) return menu.car.setPaint(col); menu.id = key; const inst = hv ? makeCraft('twinblade', HOVER_P1, CARS[id], true) : await makeCar(id, col); if (menu.id !== key) return; menu.holder.clear(); menu.holder.add(inst.group); menu.car = inst; }
 
 // ---------- screens
 const SCREENS = ['sControls', 'sTitle', 'sTour', 'sGarage', 'sSettings', 'sCredits', 'sTune', 'sLoad', 'sPause', 'sResult', 'sFun', 'sVs'];
@@ -102,6 +106,7 @@ function renderSettings() {
   sp.value = Math.round(speedT() * 100); sp.oninput = () => { save.opts.speed = sp.value / 100; spL(); }; sp.onchange = () => storeSave(); spL();
   $('oReset').style.display = G.state === 'play' ? 'none' : '';
   const sD = () => { $('oStyleD').textContent = STY_DESC[save.opts.style || 'std']; }; seg($('oStyle'), [['std', 'STANDARD'], ['noir', 'NOIR'], ['neon', 'NEON'], ['synth', 'SYNTHWAVE'], ['heat', 'HEAT'], ['redline', 'REDLINE']], save.opts.style || 'std', v => { save.opts.style = v; sD(); applyStyle(); }); sD();
+  seg($('oVeh'), [['hover', 'HOVER'], ['classic', 'CLASSIC']], save.opts.veh || 'hover', v => { save.opts.veh = v; if (menu && G.state !== 'play') setMenuCar(save.car); });
   seg($('oClip'), [[false, 'OFF'], [true, 'ON']], !!save.opts.clip, v => { save.opts.clip = v; });
   seg($('oHead'), [['deadly', 'DEADLY'], ['bulldoze', 'BULLDOZE']], save.opts.headon || 'deadly', v => { save.opts.headon = v; });
   seg($('oAssist'), [[0, 'OFF'], [1, 'NORMAL'], [2, 'STRONG']], save.opts.assist ?? 1, v => { save.opts.assist = v; });
@@ -233,9 +238,9 @@ async function startEvent(ev) {
     const [protos] = await Promise.all([loadTraffic(), initPhysics()]); load(0.62);
     const scene = new THREE.Scene(); scene.add(world.group); scene.environment = world.env.env; scene.fog = new THREE.FogExp2(world.theme.fog[0], world.theme.fog[1]);
     ctx.world = world; ctx.track = world.main; ctx.scene = scene; ctx.fx = new FX(scene); ctx.fx.setWeather(world.theme.weather); ctx.wrecks = new Wrecks(world); ctx.traffic = new Traffic(protos, scene); ctx.obstacles = []; ctx.rivals = [];
-    ctx.player = new Player(await makeCar(save.car, save.paint[save.car] ?? CARS[save.car].color ?? null), scene); load(0.76); const lowQ = ctx.q.name === 'low', NR = Math.round(({ race: 7, cutoff: 7, getaway: 8, brawl: ev.traffic === false ? 12 : 11, never: 5, smash: 5 }[ev.mode] || 0) * (lowQ ? 0.65 : 1));
+    ctx.player = new Player(hoverOn() ? makeCraft('twinblade', HOVER_P1, CARS[save.car], true) : await makeCar(save.car, save.paint[save.car] ?? CARS[save.car].color ?? null), scene); load(0.76); const lowQ = ctx.q.name === 'low', NR = Math.round(({ race: 7, cutoff: 7, getaway: 8, brawl: ev.traffic === false ? 12 : 11, never: 5, smash: 5 }[ev.mode] || 0) * (lowQ ? 0.65 : 1));
     if (NR) { const pp = CARS[save.car].price, pool = RIVAL_IDS.filter(id => id !== save.car).sort((a, b) => Math.abs(CARS[a].price - pp) - Math.abs(CARS[b].price - pp) || Math.random() - 0.5);
-      for (let i = 0; i < NR; i++) { const id = pool[i % pool.length]; ctx.rivals.push(new Rival(await makeCar(id, ev.mode === 'getaway' ? 0x14161a : RIVAL_COLS[i % RIVAL_COLS.length]), scene, i)); load(0.78 + i * 0.2 / NR); } }
+      for (let i = 0; i < NR; i++) { const id = pool[i % pool.length]; const lk = rivalLook(i); ctx.rivals.push(new Rival(hoverOn() ? makeCraft(lk.design, ev.mode === 'getaway' ? 0xff2a1a : lk.glow, CARS[id]) : await makeCar(id, ev.mode === 'getaway' ? 0x14161a : RIVAL_COLS[i % RIVAL_COLS.length]), scene, i)); load(0.78 + i * 0.2 / NR); } }
     if (G.trail) G.trail.dispose(); G.trail = new LightTrail(scene); applyStyle(); propsInit(); if (G.streaks) G.streaks.dispose(); G.streaks = new CarStreaks(scene);
     race = { scene, world, ev }; setupRace(ev); post.setScene(scene, camera); post.setBloom(world.theme.bloom); post.u.uExpo.value = world.theme.expo || 1; load(1); await new Promise(r => setTimeout(r, 120));
     show(null); $('hud').classList.remove('hide'); $('touch').classList.toggle('hide', !isTouch); G.state = 'play'; G.paused = false; audio.music(ev.city, 'race'); ads.start();
@@ -249,7 +254,7 @@ function setupRace(ev) {
   else { const S0 = W.startS, lead = ev.mode === 'getaway', per = Math.min(3, tr.lanes), slot = k => [S0 - 7 - Math.floor(k / per) * 10, tr.lane(k % per)]; R.forEach((r, i) => { const [s, d] = slot(i + (lead ? 2 : 0)); r.put(tr, s, d); r.prog = s - S0; }); const [s, d] = slot(lead ? 0 : R.length); P.put(tr, s, d, 0); P.prog = G.prog0 = s - S0; P.boost = 0.5; P.boostExt = 0; }
   P.frozen = true; cam.view = save.opts.cam || 0; cam.set('intro'); cam.snap(P); H.big.className = ''; H.pop.innerHTML = ''; hint('');
   ctx.cine = true; document.body.classList.add('cine'); setText($('iC1'), CITIES[ev.city].name); setText($('iC2'), ev.name + (ev.desc ? '  /  ' + ev.desc : '')); setText($('iC3'), isTouch ? 'TAP BOOST TO SKIP' : 'SPACE OR A TO SKIP');
-  if (W.theme.night) { const sp = new THREE.SpotLight(0xfff1dc, 700, 180, 0.5, 0.8, 1.35); sp.position.set(0, 0.95, P.dims.hl * 0.8); sp.target.position.set(0, -1.4, 40); P.root.add(sp, sp.target); G.spot = sp; } else G.spot = null;
+  if (W.theme.night) { const sp = new THREE.SpotLight(0xfff1dc, 700, 180, 0.5, 0.8, 1.35); if (P.inst.hover) { sp.position.set(0, 0.95, P.dims.hl + 0.4); sp.intensity = 420; } else sp.position.set(0, 0.95, P.dims.hl * 0.8); sp.target.position.set(0, -1.4, 40); P.root.add(sp, sp.target); G.spot = sp; } else G.spot = null;
   const m = ev.mode, pos = m === 'race' || m === 'cutoff'; H.hPos.classList.toggle('hide', !pos); H.hLap.classList.toggle('hide', !pos); H.hTake.classList.toggle('hide', m === 'race'); H.dmg.classList.toggle('hide', m !== 'brawl' && m !== 'getaway'); H.map.classList.toggle('hide', m === 'pile'); H.takeLbl.textContent = { pile: 'WRECKED', never: 'DISTANCE', smash: 'SMASHED', cutoff: 'NEXT CUT', getaway: 'TO GO' }[m] || 'RED LIGHTS'; setText(H.posOf, '/' + (R.length + 1));
   if (m !== 'pile') buildMap();
 }
@@ -292,7 +297,7 @@ function cutLast() {
 const STY = { std: 0, noir: 1, neon: 2, redline: 3, synth: 4, heat: 5 }, NOIR_RED = 0xe8101c, TRC = { 2: [[0.15, 0.9, 1.0], [0.9, 0.25, 1.0]], 4: [[1.0, 0.2, 0.75], [1.0, 0.6, 0.15]] };
 const STY_DESC = { std: 'The normal look.', noir: 'Night, rain and ink. The world is black and white, rivals are red. Takedowns bring the colour back, crashes drain it.', neon: 'A dark world drawn in glowing lines. While you boost, your light trail wrecks any rival that touches it.', synth: '80s sunset: pink grid lines and a striped sun. While you boost, your light trail wrecks any rival that touches it.', heat: 'Thermal camera: cars glow hot, the road is cold. While you boost you are white hot and smash through oncoming traffic.', redline: 'Stay at top speed to build a boost multiplier, up to x4. Drop off and it resets.' };
 function applyStyle() { const stn = save.opts.style || 'std', noir = stn === 'noir'; const bc = document.body.classList; for (const k in STY) bc.remove('st-' + k); bc.add('st-' + stn);
-  if (ctx.fx && ctx.world && race) { const tw = ctx.world.theme.weather || null, want = noir && tw !== 'snow' ? 'rain' : tw; if (((ctx.fx.weather && ctx.fx.weather.kind) || null) !== want) ctx.fx.setWeather(want); } for (const r of ctx.rivals || []) { if (r.col0 == null) r.col0 = r.col; const c = noir ? NOIR_RED : r.col0; if (c != null && r.inst.color !== c) r.inst.setPaint(c); r.col = c; heatPaint(r.inst, stn === 'heat' ? 2.0 : 0); if (r.glow) r.glow.material.color.set(c); r.mkKey = ''; } }
+  if (ctx.fx && ctx.world && race) { const tw = ctx.world.theme.weather || null, want = noir && tw !== 'snow' ? 'rain' : tw; if (((ctx.fx.weather && ctx.fx.weather.kind) || null) !== want) ctx.fx.setWeather(want); } for (const r of ctx.rivals || []) { if (r.col0 == null) r.col0 = r.col; const c = noir ? NOIR_RED : r.col0; if (c != null && r.inst.color !== c) r.inst.setPaint(c); r.col = c; if (r.streakC) r.streakC.set(c); heatPaint(r.inst, stn === 'heat' ? 2.0 : 0); if (r.glow) r.glow.material.color.set(c); r.mkKey = ''; } }
 function heatPaint(inst, k, c) { c = c || [1, 0.9, 0.8]; for (const m of (inst && inst.paintMats) || []) { if (!m.emissive) continue; if (!m.userData.em0) m.userData.em0 = m.emissive.clone(); if (k) m.emissive.setRGB(k * c[0], k * c[1], k * c[2]); else m.emissive.copy(m.userData.em0); } }
 function styleFrame(u, p, rdt, pl) { const st = STY[save.opts.style] || 0; u.uStyle.value = st; if (G.styleK !== save.opts.style) { G.styleK = save.opts.style; applyStyle(); }
   p.noirC = Math.max(0, (p.noirC || 0) - 0.02 * rdt); p.noirV = damp(p.noirV || 0, st === 1 ? p.noirC : 0, 3, rdt); u.uColor.value = p.noirV;
@@ -448,8 +453,8 @@ async function startVersus() {
     ctx.world = world; ctx.track = world.main; ctx.scene = scene; ctx.fx = new FX(scene); ctx.fx.setWeather(world.theme.weather); ctx.wrecks = new Wrecks(world); ctx.traffic = new Traffic(protos, scene); ctx.obstacles = []; ctx.rivals = [];
     const tr = world.main, c1 = save.paint[save.car] ?? CARS[save.car].color ?? null, c2 = (PAINTS.find(p => p[1] !== c1 && /red|crimson|scarlet/i.test(p[0])) || PAINTS.find(p => p[1] !== c1))[1], P = [], cams = [cam, cam2], cameras = [camera, camera2];
     if (G.trail) { G.trail.dispose(); G.trail = null; }
-    for (let i = 0; i < 2; i++) { const p = new Player(await makeCar(save.car, i ? c2 : c1), scene); p.pi = i; p.inp = { steer: 0, throttle: 0, brake: 0, boost: false }; p.cam = cams[i]; p.camera = cameras[i]; p.put(tr, world.startS - 7, tr.lane(i), 0); p.prog = -7; p.boost = 0.5; p.boostExt = 0; p.frozen = true; P.push(p); load(0.7 + i * 0.12);
-      if (world.theme.night) { const sp = new THREE.SpotLight(0xfff1dc, 700, 180, 0.5, 0.8, 1.35); sp.position.set(0, 0.95, p.dims.hl * 0.8); sp.target.position.set(0, -1.4, 40); p.root.add(sp, sp.target); } }
+    for (let i = 0; i < 2; i++) { const p = new Player(hoverOn() ? makeCraft('twinblade', i ? HOVER_P2 : HOVER_P1, CARS[save.car], true) : await makeCar(save.car, i ? c2 : c1), scene); p.pi = i; p.inp = { steer: 0, throttle: 0, brake: 0, boost: false }; p.cam = cams[i]; p.camera = cameras[i]; p.put(tr, world.startS - 7, tr.lane(i), 0); p.prog = -7; p.boost = 0.5; p.boostExt = 0; p.frozen = true; P.push(p); load(0.7 + i * 0.12);
+      if (world.theme.night) { const sp = new THREE.SpotLight(0xfff1dc, 700, 180, 0.5, 0.8, 1.35); if (p.inst.hover) sp.position.set(0, 0.95, p.dims.hl + 0.4); else sp.position.set(0, 0.95, p.dims.hl * 0.8); sp.target.position.set(0, -1.4, 40); p.root.add(sp, sp.target); } }
     ctx.players = P; ctx.player = ctx.cur = P[0]; ctx.ev = EV2; race = { scene, world, ev };
     G.vs = { P, cams, cameras, crashT: [0, 0], st: [{ red: 0, crashes: 0, top: 0 }, { red: 0, crashes: 0, top: 0 }], msgT: [0, 0], fin: [0, 0], winner: -1 };
     Object.assign(G, { time: 0, phaseT: 0, sub: 'count', count: 0, goal: world.city.laps * tr.L, doneT: 0, result: null, pile: null, hudT: 0, vbT: 0 });
@@ -525,5 +530,5 @@ async function boot() {
   const im = new Image(); im.onload = () => { $('logo').innerHTML = ''; $('logo').appendChild(im); }; im.src = new URL('../art/logo.png', import.meta.url).href;   // optional custom logo
   window.__done = true;
 }
-window.__GL = { wreckPlayer, clipFrame, clipSave, renderNow(dt = 1 / 30) { if (G.vs && G.state === 'play') renderSplit(dt); else post.render(dt); }, getPost: () => post, getCams: () => [cam, cam2, camera, camera2], G, ctx, save, CARS, EVENTS, CFG, input, audio, startEvent, startVersus, toMenu, funEvent, bot: false, step(n, dt = 1 / 60) { for (let i = 0; i < n; i++) { input.update(dt); (G.vs ? versusTick : playTick)(dt); input.pressed.clear(); } } };
+window.__GL = { wreckPlayer, clipFrame, clipSave, renderNow(dt = 1 / 30) { if (G.vs && G.state === 'play') renderSplit(dt); else post.render(dt); }, getPost: () => post, getMenu: () => menu, getCams: () => [cam, cam2, camera, camera2], G, ctx, save, CARS, EVENTS, CFG, input, audio, startEvent, startVersus, toMenu, funEvent, bot: false, step(n, dt = 1 / 60) { for (let i = 0; i < n; i++) { input.update(dt); (G.vs ? versusTick : playTick)(dt); input.pressed.clear(); } } };
 boot();
