@@ -52,7 +52,7 @@ button:focus{outline:3px solid var(--g);outline-offset:2px}
 #tKnob{position:fixed;display:none;width:68px;height:68px;border-radius:50%;border:3px solid rgba(255,255,255,.7);background:rgba(25,240,122,.35);transform:translate(-34px,-34px);pointer-events:none}
 .tb{position:absolute;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;letter-spacing:1px;border:3px solid rgba(255,255,255,.55);background:rgba(0,0,0,.35)}
 .tb.on{background:rgba(255,255,255,.3);transform:scale(.94)}
-#tBoost{right:22px;bottom:26px;width:118px;height:118px;color:var(--gold);border-color:var(--gold)}#tBrake{right:158px;bottom:26px;width:86px;height:86px;color:#ff8a8a}
+#tBoost{right:22px;bottom:26px;width:118px;height:118px;color:var(--gold);border-color:var(--gold)}#tGas{display:none;right:22px;bottom:26px;width:118px;height:118px;color:#19f07a;border-color:#19f07a}body.manual #tGas{display:flex}body.manual #tBoost{bottom:158px;width:96px;height:96px}#tBrake{right:158px;bottom:26px;width:86px;height:86px;color:#ff8a8a}
 #tHint{position:absolute;left:18px;bottom:16px;font-size:12px;letter-spacing:2px;opacity:.6}
 body.touch #hSpeed{right:20px;bottom:auto;top:150px}body.touch #spd{font-size:54px}body.touch #hBoost{bottom:14px;width:38vw}
 /* ---------- menus */
@@ -175,7 +175,7 @@ body.cine #hud>*,body.cine #touch{opacity:0!important}
   <div class="half" id="hvB" style="top:50%"><b class="vp">2ND</b><span class="vl"></span><b class="vs"></b><div class="vb"><i></i></div><div class="vm"></div></div>
   <div id="vsLine"></div><div id="vsBig"></div>
 </div>
-<div id="touch" class="hide"><div id="tSteer"></div><div id="tKnob"></div><div id="tBrake" class="tb">BRAKE</div><div id="tBoost" class="tb">BOOST</div><div id="tHint">DRAG TO STEER</div></div>
+<div id="touch" class="hide"><div id="tSteer"></div><div id="tKnob"></div><div id="tBrake" class="tb">BRAKE</div><div id="tBoost" class="tb">BOOST</div><div id="tGas" class="tb">GAS</div><div id="tHint">DRAG TO STEER</div></div>
 <div id="ui">
   <section id="sTitle" class="scr">
     <div class="logo" id="logo"><b>GREEN<i>LIGHT</i></b><span>NEVER STOP</span></div>

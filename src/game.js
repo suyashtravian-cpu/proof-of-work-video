@@ -504,6 +504,7 @@ function loop(now) {
   if (G.state === 'play') { if (!window.__GL.manual) (G.vs ? versusTick : playTick)(rdt); } else if (menu && cam.mode === 'garage') { menu.holder.rotation.y += 0.2 * rdt; cam.update(rdt, null); }
   if (G.screen) padMenu(rdt);
   if (G.styleK !== save.opts.style) { G.styleK = save.opts.style; try { applyStyle(); } catch (e) { } }
+  if (G.autoK !== save.opts.auto) { G.autoK = save.opts.auto; document.body.classList.toggle('manual', !save.opts.auto); }
   if (G.state !== 'play' && post) { const st = STY[save.opts.style] || 0; post.u.uStyle.value = st === 3 ? 0 : st; post.u.uColor.value = 0; post.u.uRed.value = 0; }
   if (G.state !== 'loading' && (race || menu)) { if (!window.__GL.noRender) { if (G.vs && G.state === 'play') renderSplit(rdt); else post.render(rdt); clipFrame(); } G.frames = (G.frames || 0) + 1; }
   input.pressed.clear();

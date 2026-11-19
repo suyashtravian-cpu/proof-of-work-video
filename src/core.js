@@ -61,7 +61,7 @@ export const input = { steer: 0, throttle: 0, brake: 0, boost: false, pressed: n
     try { for (const g of livePads()) { const ax = padX(g, 0); if (ax) { st = ax; analog = true; }
       const b = i => padB(g, i); th = Math.max(th, b(7)); br = Math.max(br, b(6)); if (b(0) > 0.5 || b(2) > 0.5 || b(5) > 0.5) bo = true;
       const ed = (i, code) => { const d = b(i) > 0.5; if (d && !this['_g' + i]) this.pressed.add(code); this['_g' + i] = d; }; ed(9, 'Escape'); ed(8, 'KeyV'); ed(3, 'KeyC'); ed(1, 'KeyR'); ed(0, 'Enter'); } } catch (e) { }
-    const t = this.touch; if (t.active) { if (Math.abs(t.steer) > 0.02) { st = t.steer; analog = true; } if (t.boost) bo = true; if (t.brake) br = 1; }
+    const t = this.touch; if (t.active) { if (Math.abs(t.steer) > 0.02) { st = t.steer; analog = true; } if (t.boost) bo = true; if (t.brake) br = 1; if (t.gas) th = 1; }
     if (save.opts.auto && br < 0.1) th = 1;
     if (analog) this.steer = st; else { const rate = st === 0 ? 7 : (Math.sign(st) !== Math.sign(this.steer) ? 9 : 4.2); this.steer = approach(this.steer, st, rate * dt); }
     this.throttle = th; this.brake = br; this.boost = bo; this.analog = analog;
@@ -72,11 +72,11 @@ if (typeof window !== 'undefined') {
   addEventListener('blur', () => input.keys.clear());
 }
 export function bindTouch() {
-  const t = input.touch, zone = $('tSteer'), knob = $('tKnob'); if (!zone) return; let id = null, x0 = 0;
+  const t = input.touch, zone = $('tSteer'), knob = $('tKnob'); if (!zone) return; let id = null, x0 = 0; addEventListener('touchstart', () => { input.touchUsed = true; }, { passive: true });
   zone.addEventListener('pointerdown', e => { t.active = true; id = e.pointerId; x0 = e.clientX; knob.style.display = 'block'; knob.style.left = e.clientX + 'px'; knob.style.top = e.clientY + 'px'; zone.setPointerCapture(id); });
   zone.addEventListener('pointermove', e => { if (e.pointerId !== id) return; t.steer = clamp((e.clientX - x0) / 64, -1, 1); knob.style.transform = `translate(${t.steer * 64 - 34}px,-34px)`; });
   const end = e => { if (e.pointerId !== id) return; id = null; t.steer = 0; knob.style.display = 'none'; knob.style.transform = 'translate(-34px,-34px)'; };
   zone.addEventListener('pointerup', end); zone.addEventListener('pointercancel', end);
   const btn = (el, key) => { if (!el) return; el.addEventListener('pointerdown', e => { t.active = true; t[key] = true; el.classList.add('on'); e.preventDefault(); }); const up = () => { t[key] = false; el.classList.remove('on'); }; el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up); el.addEventListener('pointerleave', up); };
-  btn($('tBoost'), 'boost'); btn($('tBrake'), 'brake');
+  btn($('tBoost'), 'boost'); btn($('tBrake'), 'brake'); if ($('tGas')) btn($('tGas'), 'gas');
 }
