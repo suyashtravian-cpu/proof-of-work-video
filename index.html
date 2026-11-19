@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GREENLIGHT: Never Stop</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="description" content="GREENLIGHT: Never Stop. An arcade crash racer: boost through traffic, take down rivals, cause the biggest pile-up.">
+<script type="importmap">{"imports":{"three":"./lib/three.module.js","three/addons/":"./lib/addons/"}}</script>
+<style>
+:root{--g:#19f07a;--g2:#0bbf5c;--bg:#05070a;--red:#ff3355;--gold:#ffc933;--pan:rgba(8,12,18,.78)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:#fff;font-family:"Arial Black","Helvetica Neue",Arial,system-ui,sans-serif;font-weight:900;font-style:italic;touch-action:none}
+canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block}
+.hide{display:none!important}
+button{font:inherit;color:inherit;border:0;cursor:pointer;background:none}
+/* ---------- HUD */
+#hud{position:fixed;inset:0;pointer-events:none;text-shadow:0 2px 0 rgba(0,0,0,.55),0 0 18px rgba(0,0,0,.5)}
+#hPos{position:absolute;left:22px;top:14px;line-height:1}
+#pos{font-size:78px;color:var(--g);letter-spacing:-3px}#posOf{font-size:26px;opacity:.85;margin-left:4px}
+#hLap{position:absolute;left:26px;top:96px;font-size:17px;letter-spacing:1px;opacity:.92}
+#hTime{position:absolute;left:50%;top:14px;transform:translateX(-50%);font-size:30px;letter-spacing:1px;font-variant-numeric:tabular-nums}
+#hTake{position:absolute;left:50%;top:52px;transform:translateX(-50%);font-size:15px;letter-spacing:2px;white-space:nowrap}#take{color:var(--gold);font-size:22px;margin-left:8px}
+#dmg{position:absolute;left:26px;top:124px;display:flex;gap:5px}#dmg i{width:22px;height:9px;background:rgba(255,255,255,.22);transform:skewX(-20deg)}#dmg i.on{background:var(--red);box-shadow:0 0 10px var(--red)}
+#hSpeed{position:absolute;right:26px;bottom:20px;text-align:right;line-height:.9}
+#spd{font-size:92px;letter-spacing:-4px;font-variant-numeric:tabular-nums}#unit{display:block;font-size:17px;letter-spacing:3px;color:var(--g)}
+#hBoost{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);width:min(46vw,520px)}
+#bBar{height:22px;background:rgba(0,0,0,.55);transform:skewX(-22deg);border:2px solid rgba(255,255,255,.35);position:relative;overflow:hidden}
+#bFill{position:absolute;left:0;top:0;bottom:0;width:100%;transform-origin:0 50%;background:linear-gradient(90deg,#ff7a18,#ffd23a 55%,#fff);box-shadow:0 0 22px #ff9a2a}
+#hBoost.on #bFill{background:linear-gradient(90deg,#19a8ff,#7ff 60%,#fff);box-shadow:0 0 26px #3cf}
+#bSeg{position:absolute;inset:0;display:flex}#bSeg i{flex:1;border-right:2px solid rgba(0,0,0,.6)}#bSeg i:last-child{border:0}
+#bLbl{display:flex;justify-content:space-between;font-size:13px;letter-spacing:3px;margin-bottom:4px}#bMul{color:var(--gold)}
+#pop{position:absolute;left:50%;top:27%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px}
+#pop .p{font-size:25px;letter-spacing:2px;white-space:nowrap;animation:pop 1.3s ease-out forwards;color:#fff}
+#pop .p.g{color:var(--g)}#pop .p.y{color:var(--gold)}#pop .p.r{color:var(--red)}
+@keyframes pop{0%{transform:scale(.4) translateY(14px);opacity:0}12%{transform:scale(1.18);opacity:1}25%{transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:translateY(-22px)}}
+#big{position:absolute;left:0;right:0;top:36%;text-align:center;opacity:0;transform:scale(1.6);transition:opacity .12s,transform .16s cubic-bezier(.2,1.6,.4,1)}
+#big.show{opacity:1;transform:scale(1)}
+#bigT{display:block;font-size:min(13vw,104px);letter-spacing:-2px;line-height:.95;color:#fff;-webkit-text-stroke:2px rgba(0,0,0,.35)}
+#big.g #bigT{color:var(--g);text-shadow:0 0 40px rgba(25,240,122,.8),0 4px 0 #063}#big.r #bigT{color:var(--red);text-shadow:0 0 40px rgba(255,51,85,.8),0 4px 0 #600}#big.y #bigT{color:var(--gold);text-shadow:0 0 40px rgba(255,200,50,.8),0 4px 0 #640}
+#bigSub{display:block;font-size:min(4.4vw,26px);letter-spacing:4px;margin-top:6px}
+button:focus{outline:3px solid var(--g);outline-offset:2px}
+#earn{white-space:pre-line;position:absolute;left:26px;top:44%;font-size:19px;letter-spacing:2px;color:var(--g);line-height:1.5}
+#map{position:absolute;right:20px;top:16px;width:128px;height:128px;opacity:.9}
+#wrong{position:absolute;left:50%;top:18%;transform:translateX(-50%);font-size:34px;color:var(--red);letter-spacing:3px;animation:blink .5s steps(2) infinite}
+@keyframes blink{50%{opacity:.2}}
+#hint{position:absolute;left:50%;bottom:86px;transform:translateX(-50%);font-size:16px;letter-spacing:2px;color:#fff;background:rgba(0,0,0,.5);padding:6px 16px;white-space:nowrap}
+#pauseBtn{position:absolute;right:160px;top:16px;width:44px;height:44px;pointer-events:auto;background:rgba(0,0,0,.45);border:2px solid rgba(255,255,255,.4);font-size:16px;font-style:normal}
+#fps{position:fixed;left:6px;bottom:4px;font:11px monospace;color:#8f8;opacity:.75;pointer-events:none;z-index:9;font-style:normal;font-weight:400}
+/* ---------- touch controls */
+#touch{position:fixed;inset:0}
+#tSteer{position:absolute;left:0;top:0;bottom:0;width:56%}
+#tKnob{position:fixed;display:none;width:68px;height:68px;border-radius:50%;border:3px solid rgba(255,255,255,.7);background:rgba(25,240,122,.35);transform:translate(-34px,-34px);pointer-events:none}
+.tb{position:absolute;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;letter-spacing:1px;border:3px solid rgba(255,255,255,.55);background:rgba(0,0,0,.35)}
+.tb.on{background:rgba(255,255,255,.3);transform:scale(.94)}
+#tBoost{right:22px;bottom:26px;width:118px;height:118px;color:var(--gold);border-color:var(--gold)}#tBrake{right:158px;bottom:26px;width:86px;height:86px;color:#ff8a8a}
+#tHint{position:absolute;left:18px;bottom:16px;font-size:12px;letter-spacing:2px;opacity:.6}
+body.touch #hSpeed{right:20px;bottom:auto;top:150px}body.touch #spd{font-size:54px}body.touch #hBoost{bottom:14px;width:38vw}
+/* ---------- menus */
+#ui{position:fixed;inset:0;pointer-events:none}
+.scr{position:absolute;inset:0;display:none;pointer-events:auto;padding:20px;overflow:auto}
+.scr.on{display:flex}
+.logo{line-height:.86}.logo b{display:block;font-size:min(12.5vw,112px);letter-spacing:-4px;text-shadow:0 0 44px rgba(25,240,122,.55),0 5px 0 #052}
+.logo b i{color:var(--g)}.logo span{display:block;font-size:min(4.6vw,34px);letter-spacing:10px;color:var(--g);margin-top:8px}
+.logo img{max-width:min(80vw,640px);max-height:34vh}
+.btn{display:block;padding:10px 30px;margin:5px 0;font-size:21px;letter-spacing:2px;background:rgba(10,14,20,.82);border:2px solid rgba(255,255,255,.28);transform:skewX(-14deg);transition:transform .08s,background .12s,border-color .12s;min-width:240px;text-align:left}
+.btn>span{display:block;transform:skewX(14deg)}
+.btn:hover,.btn:focus-visible{background:var(--g);color:#031;border-color:#fff;transform:skewX(-14deg) translateX(8px);outline:0}
+.btn.pri{background:var(--g);color:#031;border-color:#fff}.btn.sm{font-size:15px;padding:9px 20px;min-width:0;display:inline-block;margin:4px 6px 4px 0}
+.btn[disabled]{opacity:.4;pointer-events:none}
+#sTitle{flex-direction:column;justify-content:space-between;background:linear-gradient(90deg,rgba(5,7,10,.88) 0%,rgba(5,7,10,.35) 46%,rgba(5,7,10,0) 70%)}
+#sTitle .mid{display:flex;flex-direction:column;align-items:flex-start}
+.cash{font-size:22px;color:var(--gold);letter-spacing:1px}.small{font-size:12px;letter-spacing:2px;opacity:.6;font-style:normal;font-weight:700}
+.panel{background:var(--pan);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(8px);padding:18px 20px}
+.h1{font-size:34px;letter-spacing:1px;margin-bottom:12px}.h1 i{color:var(--g)}
+#sTour{flex-direction:column;background:rgba(5,7,10,.72)}
+#cities{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;flex:1;align-content:start}
+.city{position:relative;padding:16px;border:2px solid rgba(255,255,255,.16);background:linear-gradient(160deg,rgba(20,28,38,.92),rgba(6,9,13,.92));min-height:230px}
+.city.lock{opacity:.5}.city h3{font-size:25px;line-height:1}.city p{font-size:12px;font-style:normal;font-weight:700;opacity:.7;margin:6px 0 12px;letter-spacing:.5px}
+.city .bar{position:absolute;left:0;top:0;height:5px;width:100%}
+.ev{display:flex;justify-content:space-between;align-items:center;width:100%;padding:10px 12px;margin-top:8px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);font-size:16px;letter-spacing:1px;text-align:left}
+.ev:hover{background:var(--g);color:#031}.ev small{display:block;font-size:10px;font-style:normal;font-weight:700;opacity:.7;letter-spacing:.5px}
+.medal{width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,.3);flex:none}.medal.gold{background:var(--gold);border-color:#fff}.medal.silver{background:#cfd6de;border-color:#fff}.medal.bronze{background:#c9773a;border-color:#fff}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+#sGarage{flex-direction:column;justify-content:space-between;background:linear-gradient(0deg,rgba(5,7,10,.9) 0%,rgba(5,7,10,0) 46%,rgba(5,7,10,.55) 100%)}
+#gName{font-size:min(9vw,62px);letter-spacing:-2px;line-height:1}#gCls{color:var(--g);letter-spacing:4px;font-size:15px}
+.stat{display:grid;grid-template-columns:124px 1fr;gap:10px;align-items:center;font-size:12px;letter-spacing:2px;margin:5px 0}.stat div{height:8px;background:rgba(255,255,255,.14);transform:skewX(-20deg)}.stat div i{display:block;height:100%;background:var(--g);box-shadow:0 0 10px var(--g)}
+#gPaint{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}#gPaint button{width:30px;height:30px;border:2px solid rgba(255,255,255,.5);transform:skewX(-12deg)}#gPaint button.on{border-color:var(--g);box-shadow:0 0 12px var(--g)}
+.arrow{font-size:44px;padding:6px 18px;background:rgba(0,0,0,.4);border:2px solid rgba(255,255,255,.3)}
+.center{align-items:center;justify-content:center;background:rgba(5,7,10,.8)}
+.center .panel{width:min(94vw,620px);max-height:92vh;overflow:auto}
+.opt{display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:center;margin:9px 0;font-size:13px;letter-spacing:1px}
+.opt input[type=range]{width:100%;accent-color:var(--g)}.opt .seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{padding:7px 12px;font-size:12px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.06)}.seg button.on{background:var(--g);color:#031}
+#sLoad{flex-direction:column;align-items:center;justify-content:center;background:var(--bg);text-align:center}
+#lBar{width:min(70vw,460px);height:10px;background:rgba(255,255,255,.12);transform:skewX(-20deg);margin:22px 0 14px}#lFill{height:100%;width:5%;background:var(--g);box-shadow:0 0 18px var(--g);transition:width .25s}
+#lTip{font-size:14px;font-style:normal;font-weight:700;opacity:.75;max-width:520px;letter-spacing:.5px}
+#rTitle{font-size:min(11vw,70px);letter-spacing:-2px;line-height:1}#rSub{letter-spacing:4px;color:var(--g);font-size:15px;margin:4px 0 12px}
+.rl{display:flex;justify-content:space-between;font-size:15px;letter-spacing:1px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.1)}.rl b{color:var(--gold)}
+#rCash{font-size:36px;color:var(--gold);margin:12px 0 6px}
+#cred{font-style:normal;font-weight:400;font-size:12px;line-height:1.55;letter-spacing:.2px}#cred b{font-weight:900;color:var(--g)}
+.tune{display:grid;grid-template-columns:150px 1fr 52px;gap:10px;align-items:center;font-size:12px;letter-spacing:.5px;font-style:normal;margin:6px 0}.tune input{width:100%;accent-color:var(--g)}
+#tOut{width:100%;height:70px;margin-top:8px;background:#000;color:#9f9;font:11px monospace;border:1px solid #333;user-select:text;-webkit-user-select:text}
+#rot{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);font-size:11px;letter-spacing:2px;opacity:.7;pointer-events:none;display:none}
+@media (max-width:860px){#cities{grid-template-columns:repeat(2,1fr)}.city{min-height:0}.btn{font-size:17px;padding:10px 22px;min-width:190px}#map{width:92px;height:92px}#pauseBtn{right:122px}#pos{font-size:56px}#hLap{top:72px}#dmg{top:98px}#spd{font-size:60px}.h1{font-size:26px}}
+@media (max-height:440px){.logo b{font-size:64px}.logo span{font-size:16px;letter-spacing:6px}.btn{padding:7px 18px;margin:4px 0;font-size:15px}.city{padding:10px}.city p{display:none}.ev{padding:6px 10px;margin-top:5px;font-size:13px}.ev small{display:none}.h1{font-size:22px;margin-bottom:6px}#gName{font-size:36px}.scr{padding:12px}#big{top:26%}}
+@media (orientation:portrait) and (max-width:700px){#rot{display:block}#cities{grid-template-columns:1fr}}
+.btn small{display:block;font-size:11px;letter-spacing:1px;opacity:.8;font-style:normal;font-weight:700;margin-top:2px}
+#sFun{flex-direction:column;background:rgba(5,7,10,.72)}
+#fModes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.ev.fun{margin:0;padding:16px;font-size:23px;min-height:128px;flex-direction:column;align-items:flex-start;justify-content:space-between}
+.ev.fun small{font-size:12px;margin-top:6px;line-height:1.35}.ev.fun b{font-size:12px;color:var(--gold);letter-spacing:1px;margin-top:10px}.ev.fun:hover b{color:#031}
+#dmg i.ok{background:var(--g);box-shadow:0 0 8px var(--g)}
+#hud2{position:fixed;inset:0;pointer-events:none;text-shadow:0 2px 0 rgba(0,0,0,.55),0 0 14px rgba(0,0,0,.5)}
+.half{position:absolute;left:0;right:0;top:0;height:50%}
+.vp{position:absolute;left:18px;top:8px;font-size:44px;letter-spacing:-2px}.vl{position:absolute;left:20px;top:58px;font-size:13px;letter-spacing:2px}
+.vs{position:absolute;right:18px;bottom:12px;font-size:30px;letter-spacing:-1px}
+.vb{position:absolute;left:50%;bottom:14px;width:min(34vw,360px);height:12px;transform:translateX(-50%) skewX(-22deg);background:rgba(0,0,0,.55);border:2px solid rgba(255,255,255,.35);overflow:hidden}
+.vb i{display:block;height:100%;transform-origin:0 50%;background:linear-gradient(90deg,#ff7a18,#ffd23a 55%,#fff)}
+.vm{position:absolute;left:0;right:0;top:32%;text-align:center;font-size:min(8vw,54px);letter-spacing:-1px;opacity:0;transition:opacity .15s}
+.vm.show{opacity:1}.vm.g{color:var(--g)}.vm.r{color:var(--red)}.vm.y{color:var(--gold)}
+#vsLine{position:absolute;left:0;right:0;top:50%;height:4px;margin-top:-2px;background:#000;box-shadow:0 0 0 1px rgba(255,255,255,.3)}
+#vsBig{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;font-size:min(16vw,120px);color:var(--g);opacity:0;transition:opacity .12s;-webkit-text-stroke:2px rgba(0,0,0,.4)}#vsBig.show{opacity:1}
+.splitV .half{right:auto;width:50%;height:100%}.splitV #hvB{top:0!important;left:50%}.splitV #vsLine{left:50%;right:auto;top:0;bottom:0;width:4px;height:auto;margin:0 0 0 -2px}.splitV .vb{width:min(26vw,300px)}.splitV .vp{font-size:38px}.splitV .vm{font-size:min(6vw,48px)}
+#inc{position:fixed;left:0;right:0;bottom:13%;pointer-events:none;z-index:3}#inc i{position:absolute;bottom:0;width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;border-top:18px solid var(--c,#ff3355);opacity:0;filter:drop-shadow(0 0 10px var(--c,#ff3355));transition:opacity .15s;animation:incb .5s infinite alternate}#inc i:first-child{left:22%}#inc i:last-child{right:22%}@keyframes incb{to{transform:translateY(-8px)}}
+#oSpeed{-webkit-appearance:none;appearance:none;height:12px;border-radius:7px;background:linear-gradient(90deg,var(--g),var(--gold) 50%,var(--red));outline:none;margin:6px 0 2px}#oSpeed::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;border:4px solid #05070a;box-shadow:0 0 12px rgba(255,255,255,.7);cursor:pointer}#oSpeed::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:4px solid #05070a}.ticks{display:flex;justify-content:space-between;font-size:10px;letter-spacing:1px;opacity:.7}.spdl{font-size:13px;color:var(--gold);margin-top:4px}
+.ctl{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:6px}.ctl h4{color:var(--g);font-size:14px;letter-spacing:2px;margin-bottom:6px}.ctl p{display:flex;justify-content:space-between;gap:10px;font-size:12px;font-style:normal;font-weight:400;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.08)}.ctl b{font-weight:900;font-style:italic;color:#fff}@media(max-width:700px){.ctl{grid-template-columns:1fr}}
+
+body.st-noir{--g:#e8101c;--g2:#9a0a10;--gold:#f4f1ea;--red:#e8101c;--pan:rgba(6,6,6,.86)}
+body.st-noir #bFill,body.st-noir .vb i{background:linear-gradient(90deg,#5a0006,#e8101c 60%,#fff);box-shadow:0 0 18px #e8101c}
+body.st-noir #hBoost.on #bFill{background:linear-gradient(90deg,#888,#fff);box-shadow:0 0 22px #fff}
+body.st-noir canvas{filter:none}
+body.st-noir::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55));mix-blend-mode:multiply}
+body.st-neon{--g:#00f0ff;--g2:#ff2bd6;--gold:#ff2bd6;--pan:rgba(6,2,20,.82)}
+body.st-neon #bFill,body.st-neon .vb i{background:linear-gradient(90deg,#ff2bd6,#00f0ff);box-shadow:0 0 22px #00f0ff}
+body.st-synth{--g:#ff3fa4;--g2:#ff8a00;--gold:#ffd23a;--pan:rgba(24,4,32,.82)}
+body.st-synth #bFill,body.st-synth .vb i{background:linear-gradient(90deg,#7a2cff,#ff3fa4 55%,#ffb000);box-shadow:0 0 22px #ff3fa4}
+body.st-heat{--g:#ffb000;--g2:#ff4800;--gold:#ffffff;--pan:rgba(10,4,20,.82)}
+body.st-heat #bFill,body.st-heat .vb i{background:linear-gradient(90deg,#3a0a7a,#ff1e50 40%,#ffb000 75%,#fff);box-shadow:0 0 22px #ff7a00}
+body.st-redline{--g:#ff2a2a;--g2:#b30000}
+
+#lb i{position:fixed;left:0;right:0;height:11vh;background:#000;z-index:40;pointer-events:none;transition:transform .7s cubic-bezier(.6,0,.2,1)}
+#lb i:first-child{top:0;transform:translateY(-101%)}#lb i:last-child{bottom:0;transform:translateY(101%)}
+body.cine #lb i{transform:none}
+#iCard{position:fixed;left:6vw;bottom:15vh;z-index:41;pointer-events:none;opacity:0;transform:translateX(-30px);transition:opacity .5s,transform .7s}
+body.cine #iCard{opacity:1;transform:none;transition-delay:.35s}
+#iC1{font-size:clamp(30px,6vw,74px);letter-spacing:-.02em;line-height:.95;text-shadow:0 4px 30px rgba(0,0,0,.6)}
+#iC2{margin-top:10px;font-size:clamp(12px,1.6vw,19px);letter-spacing:.14em;color:var(--g)}
+#iC3{position:fixed;right:5vw;bottom:calc(11vh + 14px);font-size:11px;letter-spacing:.2em;opacity:.7}
+body.cine #hud>*,body.cine #touch{opacity:0!important}
+#hud>*{transition:opacity .45s}
+</style>
+</head>
+<body>
+<div id="lb"><i></i><i></i></div><div id="iCard"><div id="iC1"></div><div id="iC2"></div><div id="iC3"></div></div>
+<canvas id="c"></canvas>
+<div id="hud" class="hide">
+  <div id="hPos"><b id="pos">6</b><span id="posOf">/6</span></div>
+  <div id="hLap">LAP 1/2</div>
+  <div id="dmg"></div>
+  <div id="hTime">0:00.0</div>
+  <div id="hTake"><span id="takeLbl">RED LIGHTS</span><b id="take">0</b></div>
+  <div id="earn"></div>
+  <div id="pop"></div>
+  <div id="big"><b id="bigT"></b><i id="bigSub"></i></div>
+  <div id="wrong" class="hide">WRONG WAY</div>
+  <div id="hint" class="hide"></div>
+  <canvas id="map" width="256" height="256"></canvas>
+  <button id="pauseBtn">II</button>
+  <div id="hSpeed"><b id="spd">0</b><span id="unit">KM/H</span></div>
+  <div id="hBoost"><div id="bLbl"><span>BOOST</span><span id="bMul"></span></div><div id="bBar"><div id="bFill"></div><div id="bSeg"></div></div></div>
+</div>
+<div id="inc"><i></i><i></i></div>
+<div id="hud2" class="hide">
+  <div class="half" id="hvA"><b class="vp">1ST</b><span class="vl"></span><b class="vs"></b><div class="vb"><i></i></div><div class="vm"></div></div>
+  <div class="half" id="hvB" style="top:50%"><b class="vp">2ND</b><span class="vl"></span><b class="vs"></b><div class="vb"><i></i></div><div class="vm"></div></div>
+  <div id="vsLine"></div><div id="vsBig"></div>
+</div>
+<div id="touch" class="hide"><div id="tSteer"></div><div id="tKnob"></div><div id="tBrake" class="tb">BRAKE</div><div id="tBoost" class="tb">BOOST</div><div id="tHint">DRAG TO STEER</div></div>
+<div id="ui">
+  <section id="sTitle" class="scr">
+    <div class="logo" id="logo"><b>GREEN<i>LIGHT</i></b><span>NEVER STOP</span></div>
+    <div class="mid">
+      <button class="btn pri" id="bQuick"><span>QUICK PLAY</span></button>
+      <button class="btn" data-go="tour"><span>CAREER</span></button>
+      <button class="btn" data-go="fun"><span>FUN MODES<small>5 crazy modes, any city</small></span></button>
+      <button class="btn" data-go="vs"><span>2 PLAYER<small>split screen race on one keyboard</small></span></button>
+      <button class="btn" data-go="garage"><span>GARAGE</span></button>
+      <button class="btn" data-go="settings"><span>SETTINGS</span></button>
+      <button class="btn" data-go="credits"><span>CREDITS</span></button>
+    </div>
+    <div class="row"><span class="cash" id="tCash">$0</span><span class="small" id="tMsg">LOADING...</span></div>
+  </section>
+  <section id="sTour" class="scr">
+    <div class="row" style="justify-content:space-between;margin-bottom:12px"><div class="h1" style="margin:0">CAR<i>EER</i></div><div class="row"><span class="cash" id="wCash">$0</span><button class="btn sm" data-go="title"><span>BACK</span></button></div></div>
+    <div id="cities"></div>
+  </section>
+  <section id="sFun" class="scr">
+    <div class="row" style="justify-content:space-between;margin-bottom:12px"><div class="h1" style="margin:0">FUN <i>MODES</i></div><div class="row"><span class="cash" id="fCash">$0</span><button class="btn sm" data-go="title"><span>BACK</span></button></div></div>
+    <div class="panel" style="margin-bottom:12px"><div class="opt"><span>CITY</span><div class="seg" id="fCity"></div></div><div class="opt" style="margin-bottom:0"><span>BRAWL TRAFFIC</span><div class="seg" id="fTraffic"></div></div></div>
+    <div id="fModes"></div>
+  </section>
+  <section id="sVs" class="scr center"><div class="panel">
+    <div class="h1">2 <i>PLAYER</i></div>
+    <div class="small" style="margin-bottom:10px">SPLIT SCREEN RACE. PLAYER 1 ON TOP, PLAYER 2 BELOW. SHOVE THE OTHER CAR INTO A WALL TO RED LIGHT IT.</div>
+    <div class="opt"><span>CITY</span><div class="seg" id="vCity"></div></div>
+    <div class="opt"><span>TRAFFIC</span><div class="seg" id="vTraffic"></div></div>
+    <div class="opt"><span>PLAYER 1</span><span class="small">W A S D TO DRIVE, LEFT SHIFT OR SPACE TO BOOST</span></div>
+    <div class="opt"><span>PLAYER 2</span><span class="small">ARROW KEYS TO DRIVE, RIGHT SHIFT OR ENTER TO BOOST</span></div>
+    <div class="small" id="vNote" style="margin:8px 0"></div>
+    <div class="row"><button class="btn sm pri" id="vStart"><span>START RACE</span></button><button class="btn sm" data-go="title"><span>BACK</span></button></div>
+  </div></section>
+  <section id="sGarage" class="scr">
+    <div class="row" style="justify-content:space-between"><div><div id="gCls">COMPACT</div><div id="gName">PIXIE 95</div></div><div class="row"><span class="cash" id="gCash">$0</span><button class="btn sm" data-go="title"><span>BACK</span></button></div></div>
+    <div class="row" style="justify-content:space-between;align-items:flex-end">
+      <div class="panel" style="width:min(92vw,360px)"><div id="gStats"></div><div id="gPaint"></div><button class="btn pri" id="gBuy" style="margin:6px 0 0"><span>SELECT</span></button></div>
+      <div class="row"><button class="arrow" id="gPrev">&#9664;</button><button class="arrow" id="gNext">&#9654;</button></div>
+    </div>
+  </section>
+  <section id="sSettings" class="scr center"><div class="panel">
+    <div class="h1">SETTINGS</div>
+    <div class="opt"><span>GRAPHICS</span><div class="seg" id="oQual"></div></div>
+    <div class="opt"><span>2P SPLIT SCREEN</span><div class="seg" id="oSplit"></div></div>
+    <div class="opt"><span>GAME SPEED</span><div><input type="range" id="oSpeed" min="0" max="100" step="1"><div class="ticks"><span>NORMAL</span><span>FAST</span><span>INSANE</span></div><div id="oSpeedL" class="spdl"></div></div></div>
+    <div class="opt"><span>VISUAL STYLE</span><div><div class="seg" id="oStyle"></div><div class="small" id="oStyleD" style="margin-top:4px;font-size:11px;opacity:.75"></div></div></div>
+    <div class="opt"><span>CLIP RECORDER</span><div><div class="seg" id="oClip"></div><div class="small" style="margin-top:4px;font-size:11px;opacity:.75">Keeps the last 10 seconds. Press V (or View on the pad) to save a vertical video for Reels. Uses extra power.</div></div></div>
+    <div class="opt"><span>ONCOMING TRAFFIC</span><div><div class="seg" id="oHead"></div><div class="small" style="margin-top:4px;font-size:11px;opacity:.75">Deadly: nose-to-nose hits crash you. Bulldoze: you smash through everything.</div></div></div>
+    <div class="opt"><span>TAKEDOWN ASSIST</span><div class="seg" id="oAssist"></div></div>
+    <div class="opt"><span>SPEED UNIT</span><div class="seg" id="oUnit"></div></div>
+    <div class="opt"><span>AUTO ACCELERATE</span><div class="seg" id="oAuto"></div></div>
+    <div class="opt"><span>MUSIC</span><input type="range" id="oMusic" min="0" max="1" step="0.05"></div>
+    <div class="opt"><span>SOUND</span><input type="range" id="oSfx" min="0" max="1" step="0.05"></div>
+    <div class="small" style="margin:10px 0">KEYS: ARROWS / WASD drive, SPACE boost, BRAKE + STEER to drift, C camera, R reset, ESC pause. Gamepad works too.</div>
+    <div class="row"><button class="btn sm" id="oFull"><span>FULLSCREEN</span></button><button class="btn sm" data-go="controls"><span>CONTROLS</span></button><button class="btn sm" data-go="tune"><span>TUNING</span></button><button class="btn sm" id="oReset"><span>RESET PROGRESS</span></button><button class="btn sm pri" data-go="title"><span>DONE</span></button></div>
+  </div></section>
+  <section id="sCredits" class="scr center"><div class="panel"><div class="h1">CREDITS</div><div id="cred"></div><button class="btn sm pri" data-go="title" style="margin-top:12px"><span>BACK</span></button></div></section>
+  <section id="sTune" class="scr center"><div class="panel"><div class="h1">TUNING</div><div class="small" style="margin-bottom:8px">Changes apply instantly and are saved on this device.</div><div id="tList"></div>
+    <div class="row" style="margin-top:8px"><button class="btn sm" id="tReset"><span>RESET</span></button><button class="btn sm" id="tCopy"><span>COPY VALUES</span></button><button class="btn sm pri" id="tClose"><span>CLOSE</span></button></div><textarea id="tOut" class="hide" readonly></textarea></div></section>
+  <section id="sLoad" class="scr"><div class="logo"><b>GREEN<i>LIGHT</i></b></div><div id="lBar"><div id="lFill"></div></div><div id="lTip"></div></section>
+  <section id="sControls" class="scr center"><div class="panel" style="width:min(94vw,780px)"><div class="h1">CONTROLS</div>
+    <div class="ctl">
+      <div><h4>KEYBOARD</h4><p><b>A D / &larr; &rarr;</b>Steer</p><p><b>W / &uarr;</b>Accelerate</p><p><b>S / &darr;</b>Brake, reverse</p><p><b>SPACE / SHIFT / X</b>Boost</p><p><b>BRAKE + STEER</b>Drift</p><p><b>C</b>Change camera</p><p><b>R</b>Back on the road</p><p><b>ESC / P</b>Pause</p></div>
+      <div><h4>GAMEPAD</h4><p><b>LEFT STICK</b>Steer</p><p><b>RT</b>Accelerate</p><p><b>LT</b>Brake, reverse</p><p><b>A / X / RB</b>Boost</p><p><b>LT + STEER</b>Drift</p><p><b>Y</b>Change camera</p><p><b>B</b>Back on the road</p><p><b>START</b>Pause</p></div>
+      <div><h4>2 PLAYERS</h4><p><b>P1: W A S D</b>Drive</p><p><b>P1: L-SHIFT / SPACE</b>Boost</p><p><b>P2: ARROWS</b>Drive</p><p><b>P2: R-SHIFT / ENTER</b>Boost</p><h4 style="margin-top:12px">TOUCH</h4><p><b>DRAG</b>Steer</p><p><b>BOOST / BRAKE</b>Buttons</p></div>
+    </div>
+    <div class="small" style="margin:10px 0 4px">After you crash, steer to aim your wreck into rivals. Near misses, the oncoming lane, drifts and jumps fill your boost. Takedowns fill it completely.</div>
+    <button class="btn sm pri" id="cBack"><span>BACK</span></button></div></section>
+  <section id="sPause" class="scr center"><div class="panel" style="width:min(92vw,360px)"><div class="h1">PAUSED</div><button class="btn pri" id="pResume"><span>RESUME</span></button><button class="btn" id="pRestart"><span>RESTART</span></button><button class="btn" id="pSet"><span>SETTINGS</span></button><button class="btn" id="pCtl"><span>CONTROLS</span></button><button class="btn" id="pQuit"><span>QUIT</span></button></div></section>
+  <section id="sResult" class="scr center"><div class="panel"><div id="rSub"></div><div id="rTitle"></div><div id="rLines" style="margin-top:10px"></div><div id="rCash">$0</div>
+    <div class="row"><button class="btn sm pri" id="rNext"><span>CONTINUE</span></button><button class="btn sm" id="rRetry"><span>RETRY</span></button><button class="btn sm hide" id="rDouble"><span>WATCH AD: DOUBLE CASH</span></button></div></div></section>
+</div>
+<div id="rot">TURN YOUR PHONE SIDEWAYS FOR THE BEST VIEW</div>
+<div id="fps"></div>
+<script type="module" src="./src/game.js"></script>
+</body>
+</html>

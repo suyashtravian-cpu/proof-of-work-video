@@ -1,0 +1,10 @@
+GREENLIGHT: Never Stop
+By Pilot Access
+
+3D models (Creative Commons Attribution 4.0, https://creativecommons.org/licenses/by/4.0/).
+The models were resized, recoloured and optimized for this game. In-game car names are our own.
+The full list with authors and source links is on the in-game Credits screen (src/assets.js, CREDITS).
+
+Skies: Poly Haven (CC0). Surface textures: ambientCG (CC0).
+Engine: three.js (MIT). Physics: Rapier (Apache 2.0).
+Sound and music are generated in the browser by the game code.
